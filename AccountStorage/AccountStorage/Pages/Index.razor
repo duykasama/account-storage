@@ -1,9 +1,52 @@
 ﻿@page "/"
+@layout EmtpyLayout
+@inject NavigationManager Urihelper
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Login</PageTitle>
 
-<h1>Hello, world!</h1>
+<form class="d-flex justify-content-center align-items-center flex-column w-50">
+    <h3>You have to log in before using this system</h3>
+    <div class="form-group w-50">
+        <label for="email" class="form-label mt-4">Email address</label>
+        <input type="email"
+               class="form-control"
+               id="email"
+               aria-describedby="emailHelp"
+               placeholder="Enter email"
+               required 
+               @bind-value="@email"/>
+    </div>
+    <div class="form-group w-50">
+        <label for="password" class="form-label mt-4">Password</label>
+        <input type="password"
+               class="form-control"
+               id="password"
+               placeholder="Enter password"
+               autocomplete="off"
+               required 
+               @bind-value="@password"/>
+    </div>
+    <div class="form-group text-center mt-4">
+        <button type="button" class="btn btn-primary" @onclick="Login">Log in</button>
+    </div>
+    <h3 class="text-center text-danger">@message</h3>
+</form>
 
-Welcome to your new app.
+@code {
+    string email = string.Empty;
+    string password = string.Empty;
+    string message = string.Empty;
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    private void Login()
+    {
+        if (email == "duy@gmail.com" && password == "123")
+        {
+            Urihelper.NavigateTo("accounts");
+        }
+        else
+        {
+            message = "Incorrect email or password";
+        }
+    }
+
+}
