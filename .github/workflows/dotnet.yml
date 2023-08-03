@@ -20,8 +20,6 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-    - name: Change directory
-      run : cd AccountStorage
     - name: Restore dependencies
       run: dotnet restore -f /AccountStorage
     - name: Build
