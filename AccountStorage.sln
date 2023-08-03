@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountStorage", "AccountStorage\AccountStorage.csproj", "{E4DCAFA5-F475-4B30-BC03-322628BA5101}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountStorage", "AccountStorage\AccountStorage.csproj", "{E4DCAFA5-F475-4B30-BC03-322628BA5101}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountStorage.Service", "AccountStorage.Service\AccountStorage.Service.csproj", "{5ED68856-E40B-4E1B-9141-A05EF9426205}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountStorage.Service", "AccountStorage.Service\AccountStorage.Service.csproj", "{5ED68856-E40B-4E1B-9141-A05EF9426205}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

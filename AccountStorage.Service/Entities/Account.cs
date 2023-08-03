@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AccountStorage.Service.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AccountStorage.Service.Entities
@@ -13,7 +14,11 @@ namespace AccountStorage.Service.Entities
         [Required]
         public string Password { get; set; } = null!;
         [Required]
-        public string Platform { get; set; } = null!;
+        public string AccountName { get; set; } = null!;
+        [Required]
+        public Platform Platform { get; set; } = null!;
+        [Required]
+        public Category Category { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime LastModification { get; set; }
     }

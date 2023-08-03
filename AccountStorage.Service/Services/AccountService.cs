@@ -26,7 +26,9 @@ namespace AccountStorage.Service.Services
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Account>> GetAccountsAsync() => Task.FromResult(_dbContext.Accounts.AsEnumerable());
+        public async Task<IEnumerable<Account>> GetAccountsAsync() => await _dbContext.Accounts
+            .Include(a => a.Platform)
+            .ToListAsync();
 
         public Task<Account> UpdateAccount(Account account)
         {

@@ -1,0 +1,47 @@
+﻿@if (display)
+{
+    <div class="modal" style="display: block">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="Close">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body ">
+                    <label for="password" class="form-label mt-4">Password</label>
+                    <input type="password"
+                           class="form-control"
+                           id="password"
+                           placeholder="Enter password"
+                           autocomplete="off"
+                           required
+                    @bind-value="@password" />
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary">Confirm</button>
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal" @onclick="Close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool display = false;
+    private string password = string.Empty;
+
+    public void Show()
+    {
+        this.display = true;
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        this.display = false;
+        StateHasChanged();
+    }
+}

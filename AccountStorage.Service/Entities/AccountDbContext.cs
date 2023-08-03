@@ -7,6 +7,7 @@ namespace AccountStorage.Service.Entities
         public AccountDbContext(DbContextOptions<AccountDbContext> options) : base(options) { }
         public AccountDbContext() { }
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Platform> Platforms { get; set; }
 
         private string GetConnectionString()
         {
