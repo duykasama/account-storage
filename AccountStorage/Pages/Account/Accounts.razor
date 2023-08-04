@@ -1,5 +1,5 @@
 ﻿@page "/accounts"
-@inject AccountService MyService
+@inject IAccountService MyService
 
 <PageTitle>Accounts</PageTitle>
 
@@ -10,11 +10,12 @@
             <th class="col-2">Account name</th>
             <th class="col-3">Email</th>
             <th class="col-2">Platform</th>
-            <th class="col-2">Created at</th>
+            <th class="col-2">Last modification</th>
             <th colspan="2" class="col-2">Actions</th>
         </tr>
     </thead>
     <tbody>
+
         @foreach (var account in @accountList.Select((value, index) => new { value, index }))
         {
             <tr class="row ">
@@ -22,7 +23,7 @@
                 <td class="col-2">@account.value.AccountName</td>
                 <td class="col-3">@account.value.Email</td>
                 <td class="col-2">@account.value.Platform.Name</td>
-                <td class="col-2">@account.value.CreationDate</td>
+                <td class="col-2">@account.value.LastModification</td>
                 <td class="col-1">
                     <button class="btn btn-outline-light">
                         <span class="oi oi-pencil"></span>
@@ -37,6 +38,7 @@
                 </td>
             </tr>
         }
+        
     </tbody>
 </table>
 
@@ -44,7 +46,7 @@
 <WarningDialog @ref="warningDialog" />
 
 @code {
-    private WarningDialog warningDialog;
+    private WarningDialog warningDialog = new WarningDialog();
     IEnumerable<Account> accountList = new List<Account>();
 
     private void ShowDialog()
@@ -52,17 +54,8 @@
         warningDialog.Show();
     }
 
-    protected override void OnInitialized()
-    {
-    }
-
     protected override async Task OnParametersSetAsync()
     {
-        await Task.Run(() =>
-        {
-            accountList = MyService.GetAccountsAsync().Result;
-        });
+        accountList = await MyService.GetAccountsAsync(); 
     }
-
-
 }

@@ -7,9 +7,16 @@ namespace AccountStorage.Service.Entities
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        
         public string Id { get; set; } = null!;
         [Required]
         public string Name { get; set; } = null!;
+
+        [Required]
+        public bool IsVerified { get; set; } = false;
+        
         public string? Url { get; set; }
+        
+        public virtual ICollection<Account> Accounts { get; set; } = new List<Account>();
     }
 }

@@ -1,0 +1,19 @@
+﻿@if (Display)
+{
+    <div class="form-group mb-3">
+        <div class="form-floating mb-3">
+            <input type="text" id="platformName" class="form-control" list="platforms" placeholder="Name" required>
+            <label for="platformName">Platform name</label>
+        </div>
+        <div class="form-floating">
+            <input type="text" id="url" class="form-control" list="platforms" placeholder="Url">
+            <label for="platformName">Url</label>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public bool Display { get; set; }
+}

@@ -1,0 +1,41 @@
+﻿@if (Display)
+{
+    <div class="modal" style="display: block">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Error</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="Close">
+                        <span aria-hidden="true"></span>
+                    </button>
+                </div>
+                <div class="modal-body ">
+                    <span>@Message</span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal" @onclick="Close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool Display { get; set; }
+    [Parameter]
+    public string Message { get; set; } = string.Empty;
+    private string password = string.Empty;
+
+    public void Show()
+    {
+        this.Display = true;
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        this.Display = false;
+        StateHasChanged();
+    }
+}
