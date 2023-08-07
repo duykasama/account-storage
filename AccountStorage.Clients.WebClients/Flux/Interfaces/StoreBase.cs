@@ -1,11 +1,15 @@
-﻿namespace AccountStorage.Clients.WebClients.Flux.Interfaces
+﻿using AccountStorage.Clients.WebClients.Enums;
+
+namespace AccountStorage.Clients.WebClients.Flux.Interfaces
 {
     public class State<T>
     {
         public T Value { get; }
-        public State(T value)
+        public Status Status { get; }
+        public State(T value, Status status)
         {
             Value = value;
+            Status = status;
         }
     }
 

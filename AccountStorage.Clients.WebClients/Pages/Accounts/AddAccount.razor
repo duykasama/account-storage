@@ -1,4 +1,9 @@
 ﻿@page "/add-account"
+@using AccountStorage.Clients.WebClients.Enums;
+@implements IDisposable
+@inject IActionDispatcher Dispatcher
+@inject AccountStore AccountStore
+
 
 <h1 class="text-center">Add New Account</h1>
 
@@ -8,30 +13,37 @@
         <ValidationSummary></ValidationSummary>
         <div class="form-group">
             <label for="accountName" class="form-label mt-4">Account name</label>
-            <InputText class="form-control" id="accountName" aria-describedby="emailHelp" placeholder="Enter account name" @bind-Value="@account.AccountName"></InputText>
+            <InputText class="form-control" id="accountName" aria-describedby="emailHelp" placeholder="Enter account name" @bind-Value="@account.AccountName" required></InputText>
         </div>
         <div class="form-group">
             <label for="exampleInputEmail1" class="form-label mt-4">Email address</label>
-            <InputText type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" @bind-Value="@account.Email"></InputText>
+            <InputText type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" @bind-Value="@account.Email" required></InputText>
             <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
         </div>
         <div class="form-group">
             <label for="exampleInputPassword1" class="form-label mt-4">Password</label>
-            <InputText type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" autocomplete="off" @bind-Value="@account.Password"></InputText>
+            <InputText type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" autocomplete="off" @bind-Value="@account.Password" required></InputText>
         </div>
         <div class="form-group">
             <label for="platform" class="form-label mt-4">Platform</label>
-            <InputText class="form-control" id="platform" aria-describedby="emailHelp" placeholder="Enter platform name" @bind-Value="@account.Platform.Name"></InputText>
+            <InputText class="form-control" id="platform" aria-describedby="emailHelp" placeholder="Enter platform name" @bind-Value="@platform.Name" required></InputText>
         </div>
         <div class="form-group">
             <label for="category" class="form-label mt-4">Category</label>
-            <InputText class="form-control" id="category" aria-describedby="emailHelp" placeholder="Enter category" @bind-Value="@account.Category.Name"></InputText>
+            <InputText class="form-control" id="category" aria-describedby="emailHelp" placeholder="Enter category" @bind-Value="@category.Name" required></InputText>
         </div>
         <div class="form-group text-end mt-3">
             <button type="submit" class="btn btn-secondary">Submit</button>
         </div>
     </EditForm>
 </div>
+<CascadingValue Name="Display" Value="@DisplayModalBox">
+    <ModalBoxComponent Title="@modalBoxTitle" Content="@modalBoxMessage" />
+</CascadingValue>
+
+@*<div>
+    <button @onclick="Show">Display</button>
+</div>*@
 
 @if (false)
 {
@@ -130,10 +142,65 @@
 
 @code {
     private Account account = new Account();
+    private Platform platform = new Platform();
+    private Category category = new Category();
 
+    private string modalBoxMessage = "Title";
+    private string modalBoxTitle = "Hello";
+
+    private bool DisplayModalBox { get; set; }
 
     private void HandleFormSubmission()
     {
-        
+        account.CreationDate = DateTime.UtcNow;
+        account.LastModification = DateTime.UtcNow;
+        account.Category = category;
+        account.Platform = platform;
+        Dispatcher.Dispatch(new AddAccountAction(account));
+        if (AccountStore.GetState().Status == Status.SUCCESS)
+        {
+            // display success message
+            modalBoxTitle = "Notification";
+            modalBoxMessage = "Account created successfully";
+            DisplayModalBox = true;
+
+        }
+        else if (AccountStore.GetState().Status == Status.FAILURE)
+        {
+            // display failure message
+            modalBoxTitle = "Error";
+            modalBoxMessage = "An error occurred";
+            DisplayModalBox = true;
+        }
+        else
+        {
+            // unknown
+        }
+    }
+
+    private void Show()
+    {
+        DisplayModalBox = !DisplayModalBox;
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        AccountStore.AddStateChangeListener(UpdateView);
+        return base.OnInitializedAsync();
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
+    }
+
+    private async void UpdateView()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        AccountStore.RemoveStateChangeListener(UpdateView);
     }
 }

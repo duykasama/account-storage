@@ -1,4 +1,5 @@
-﻿using AccountStorage.Clients.WebClients.Flux.Interfaces;
+﻿using AccountStorage.Clients.WebClients.Enums;
+using AccountStorage.Clients.WebClients.Flux.Interfaces;
 using AccountStorage.Clients.WebClients.Flux.Stores.AccountStore.Actions;
 using AccountStorage.Service.Entities;
 using AccountStorage.Service.Services;
@@ -15,7 +16,7 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
 
         public AccountStore(IActionDispatcher dispatcher)
         {
-            _state = new State<ICollection<Account>>(new List<Account>());
+            _state = new State<ICollection<Account>>(new List<Account>(), Status.NONE);
             _accountService = new AccountService();
             _dispatcher = dispatcher;
             _dispatcher.Subscribe(HandleActions);
@@ -36,21 +37,39 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
                 case LoadAccountsAction:
                     await LoadAccounts();
                     break;
-                case AddAccountAction: 
+                case AddAccountAction:
+                    await AddAccount(action.Target);
                     break;
                 case DeleteAccountAction: 
                     break;
                 case UpdateAccountAction:
                     break;
                 default: 
-                    break;
+                    return;
             }
             BroadcastStateChange();
         }
 
         private async Task LoadAccounts()
         {
-            _state = new State<ICollection<Account>>(await _accountService.GetAccountsAsync());
+            _state = new State<ICollection<Account>>(await _accountService.GetAccountsAsync(), Status.NONE);
+        }
+
+        private async Task AddAccount(Account? target)
+        {
+            if (target is null)
+            {
+                throw new ArgumentNullException(nameof(target));
+            }
+
+            if (await _accountService.CreateAccountAsync(target))
+            {
+                _state = new State<ICollection<Account>>(await _accountService.GetAccountsAsync(), Status.SUCCESS);
+            }
+            else
+            {
+                _state = new State<ICollection<Account>>(_state.Value, Status.FAILURE);
+            }
         }
     }
 }

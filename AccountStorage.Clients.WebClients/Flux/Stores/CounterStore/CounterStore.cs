@@ -1,4 +1,5 @@
-﻿using AccountStorage.Clients.WebClients.Flux.Interfaces;
+﻿using AccountStorage.Clients.WebClients.Enums;
+using AccountStorage.Clients.WebClients.Flux.Interfaces;
 using AccountStorage.Clients.WebClients.Flux.Stores.CounterStore.Actions;
 using AccountStorage.Service.Entities;
 using AccountStorage.Service.Services.Interfaces;
@@ -37,7 +38,7 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.CounterStore
 
         public CounterStore(IActionDispatcher actionDispatcher)
         {
-            _state = new State<List<int>>(new List<int>() { });
+            _state = new State<List<int>>(new List<int>() { }, Status.NONE);
             _dispatcher = actionDispatcher;
             _dispatcher.Subscribe(HandleActions);
             _counterService = new CounterService();
@@ -85,12 +86,12 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.CounterStore
 
         private void LoadAsync()
         {
-            _state = new State<List<int>>(_counterService.Load());
+            _state = new State<List<int>>(_counterService.Load(), Status.NONE);
         }
         
         private void DeleteAsync(int i)
         {
-            _state = new State<List<int>>(_counterService.Delete(i));
+            _state = new State<List<int>>(_counterService.Delete(i), Status.NONE);
         }
     }
 }

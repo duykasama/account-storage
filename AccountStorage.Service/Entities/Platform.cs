@@ -8,8 +8,8 @@ namespace AccountStorage.Service.Entities
         [Key]
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public string Id { get; set; } = null!;
-        
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+
         [Required]
         public string Name { get; set; } = null!;
 

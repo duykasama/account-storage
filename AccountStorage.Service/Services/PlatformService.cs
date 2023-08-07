@@ -15,19 +15,55 @@ namespace AccountStorage.Service.Services
         }
         #endregion
 
-        public Task<Platform> CreatePlatformAsync(Platform platform)
+        public async Task<bool> CreatePlatformAsync(Platform platform)
         {
-            throw new NotImplementedException();
+            var p = await GetPlatformByIdAsync(platform.Id);
+            if (p is not null)
+            {
+                return false;
+            }
+
+            try
+            {
+                await _dbContext.Platforms.AddAsync(platform);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> DeletePlatformAsync(Platform platform)
+        {
+            var p = await GetPlatformByIdAsync(platform.Id);
+            if (p is null)
+            {
+                return false;
+            }
+
+            try
+            {
+                _dbContext.Platforms.Remove(platform);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<Platform?> GetPlatformByIdAsync(string id) => await _dbContext.Platforms
-            .FindAsync(id);
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id);
 
         public async Task<Platform?> GetPlatformByNameAsync(string name) => await _dbContext.Platforms
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Name == name);
 
-        public async Task<IEnumerable<Platform>> GetPlatformsAsync() => await _dbContext.Platforms
+        public async Task<ICollection<Platform>> GetPlatformsAsync() => await _dbContext.Platforms
             .AsNoTracking()
             .Where(p => p.IsVerified)
             .ToListAsync();
