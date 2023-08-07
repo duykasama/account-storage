@@ -1,13 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace AccountStorage.Service.Entities
 {
-    public class AccountDbContext : DbContext
+    public class AccountDbContext : IdentityDbContext<SystemUser>
     {
         public AccountDbContext(DbContextOptions<AccountDbContext> options) : base(options) { }
         public AccountDbContext() { }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Platform> Platforms { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<SystemUser> SystemUsers { get; set; }
 
         private string GetConnectionString()
         {
@@ -15,7 +18,7 @@ namespace AccountStorage.Service.Entities
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
                 .Build();
-            return config["ConnectionStrings:DefaultConnectionString"] ?? string.Empty;
+            return config["ConnectionStrings:DefaultConnection"] ?? throw new Exception("Can't find connection string");
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

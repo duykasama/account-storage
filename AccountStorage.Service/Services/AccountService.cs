@@ -7,7 +7,7 @@ namespace AccountStorage.Service.Services
 {
     public class AccountService : IAccountService
     {
-        #region initialize context
+        #region initialize dbcontext
         private readonly AccountDbContext _dbContext;
 
         public AccountService()
@@ -26,17 +26,17 @@ namespace AccountStorage.Service.Services
 
             try
             {
+                _dbContext.Entry(account).State = EntityState.Modified;
                 await _dbContext.Accounts.AddAsync(account);
                 await _dbContext.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch
             {
-                _dbContext.Remove(account);
-                throw new Exception(ex.Message);
+                throw new Exception($"Failed to create account {account.AccountName}");
             }
         }
 
-        public async Task DeleteAccount(string id)
+        public async Task DeleteAccountByIdAsync(string id)
         {
             var a = await GetAccountByIdAsync(id);
             if (a is null)
@@ -44,16 +44,25 @@ namespace AccountStorage.Service.Services
                 throw new Exception("AccountId doesn't exist");
             }
 
-            _dbContext.Remove(a);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                _dbContext.Remove(a);
+                await _dbContext.SaveChangesAsync();
+            }
+            catch
+            {
+                throw new Exception($"Failed to delete account with {id}");
+            }
         }
 
         public async Task<Account?> GetAccountByIdAsync(string id) => await _dbContext.Accounts.FindAsync(id);
 
-        public async Task<IEnumerable<Account>> GetAccountsAsync() => await _dbContext.Accounts
+        public ICollection<Account> GetAccounts() => _dbContext.Accounts.ToList();
+
+        public async Task<ICollection<Account>> GetAccountsAsync() => await _dbContext.Accounts
             .Include(a => a.Platform)
             .ToListAsync();
-
+        
         public async Task<Platform?> GetPlatformByNameAsync(string name) => await _dbContext.Platforms
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Name == name);

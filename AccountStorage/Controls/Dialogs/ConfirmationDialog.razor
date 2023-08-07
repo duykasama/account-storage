@@ -1,4 +1,6 @@
-﻿@if (display)
+﻿@inject IAccountService AccountSerivce
+
+@if (display)
 {
     <div class="modal" style="display: block">
         <div class="modal-dialog" role="document">
@@ -21,16 +23,21 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary">Confirm</button>
+                    <button type="button" class="btn btn-outline-secondary" @onclick="Delete">Confirm</button>
                     <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal" @onclick="Close">Close</button>
                 </div>
             </div>
         </div>
     </div>
 }
+<NotificationDialog Display="displayNotification" Message="@notificationMessage" />
 
 @code {
+    [CascadingParameter(Name = "account")]
+    public Account? DeletedAccount { get; set; }
     private bool display = false;
+    private bool displayNotification = false;
+    private string notificationMessage = string.Empty;
     private string password = string.Empty;
 
     public void Show()
@@ -43,5 +50,30 @@
     {
         this.display = false;
         StateHasChanged();
+    }
+
+    public async Task Delete()
+    {
+        this.display = false;
+        if(DeletedAccount is null)
+        {
+            notificationMessage = "Account does not exist";
+            this.displayNotification = true;
+            StateHasChanged();
+            return;
+        }
+
+        if (password.Equals("123"))
+        {
+            await AccountSerivce.DeleteAccountByIdAsync(DeletedAccount.Id);
+            this.displayNotification = true;
+            notificationMessage = "Account has been deleted";
+            StateHasChanged();
+        }
+        else
+        {
+            this.displayNotification = true;
+            notificationMessage = "Wrong password";
+        }
     }
 }

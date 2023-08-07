@@ -1,5 +1,5 @@
 ﻿@page "/accounts"
-@inject IAccountService MyService
+@inject IAccountService AccountService
 
 <PageTitle>Accounts</PageTitle>
 
@@ -31,7 +31,7 @@
                     </button>
                 </td>
                 <td class="col-1">
-                    <button class="btn btn-outline-danger" @onclick="ShowDialog">
+                    <button class="btn btn-outline-danger" @onclick="(() => DeleteAccount(account.value))">
                         <span class="oi oi-trash"></span>
                         Delete
                     </button>
@@ -42,20 +42,24 @@
     </tbody>
 </table>
 
+<CascadingValue Name="account" Value="selectedAccount">
+    <WarningDialog @ref="warningDialog" />
+</CascadingValue>
 
-<WarningDialog @ref="warningDialog" />
 
 @code {
     private WarningDialog warningDialog = new WarningDialog();
+    private Account selectedAccount = new Account();
     IEnumerable<Account> accountList = new List<Account>();
-
-    private void ShowDialog()
-    {
-        warningDialog.Show();
-    }
 
     protected override async Task OnParametersSetAsync()
     {
-        accountList = await MyService.GetAccountsAsync(); 
+        accountList = await AccountService.GetAccountsAsync();
+    }
+
+    private void DeleteAccount(Account deletedAccount)
+    {
+        selectedAccount = deletedAccount;
+        warningDialog.Show();
     }
 }

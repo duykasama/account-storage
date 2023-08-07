@@ -1,0 +1,77 @@
+﻿@page "/demo"
+
+<EditForm class="d-flex justify-content-center align-items-center flex-column gap-3" Model="account" OnSubmit="HandleValidForm">
+    <h3>Create a new account</h3>
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+    <div class="form-group w-50">
+        <div class="form-control mb-3">
+            <select class="form-select text-body">
+                <option disabled hidden selected>Platform</option>
+               @* @foreach (var platform in platforms)
+                {
+                    <option>@platform.Name</option>
+                }*@
+                <option>Other</option>
+            </select>
+        </div>
+        @*<CreatePlatform Display="displayCreatePlatform" />*@
+        <div class="form-floating mb-3">
+            <InputText class="form-control" id="accoutName" placeholder="Account name" @bind-Value="account.AccountName"></InputText>
+            <label for="accoutName">Account name</label>
+        </div>
+        <div class="form-floating mb-3">
+            <InputText type="email" class="form-control" id="floatingInput" placeholder="Email" @bind-Value="account.Email"></InputText>
+            <label for="floatingInput">Email address</label>
+        </div>
+        <div class="form-floating">
+            <InputText type="password" class="form-control" id="floatingPassword" placeholder="Password" autocomplete="off" @bind-Value="account.Password"></InputText>
+            <label for="floatingPassword">Password</label>
+        </div>
+        @*<div class="form-control mt-3">
+            <select class="form-select text-body" @binde="account.Category" required>
+                <option disabled hidden selected>Category</option>
+                <option>Study</option>
+                <option>Work</option>
+                <option>Entertainment</option>
+                <option>Other</option>
+            </select>
+        </div>*@
+    </div>
+    <div class="form-group w-50 text-end">
+        <button type="submit" class="btn btn-outline-light">Create</button>
+    </div>
+</EditForm>
+
+<EditForm Model="person" OnSubmit="OnPost">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+    <div>
+        <label>
+            Id
+            <InputNumber @bind-Value="person.Id" placeholder="Enter Id" id="Id" required ></InputNumber>
+        </label>
+    </div>
+    <div>
+        <label>
+            Name
+            <InputText @bind-Value="person.Name" placeholder="Enter name" id="Name" required ></InputText>
+            </label>
+    </div>
+    <button>Submit</button>
+</EditForm>
+
+@code {
+    private Account account = new Account();
+    private Person person = new Person();
+
+    private void HandleValidForm()
+    {
+
+    }
+
+    private void OnPost()
+    {
+        
+    }
+}

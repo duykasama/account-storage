@@ -6,7 +6,7 @@ namespace AccountStorage.Service.Services
 {
     public class PlatformService : IPlatformService
     {
-        #region initialize context
+        #region initialize dbcontext
         private readonly AccountDbContext _dbContext;
         
         public PlatformService()
@@ -29,6 +29,7 @@ namespace AccountStorage.Service.Services
 
         public async Task<IEnumerable<Platform>> GetPlatformsAsync() => await _dbContext.Platforms
             .AsNoTracking()
+            .Where(p => p.IsVerified)
             .ToListAsync();
     }
 }

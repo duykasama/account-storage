@@ -1,5 +1,7 @@
+using AccountStorage.Service.Entities;
 using AccountStorage.Service.Services;
 using AccountStorage.Service.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +10,12 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPlatformService, PlatformService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddDbContext<AccountDbContext>(options =>
+{
+    options.UseSqlServer();
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+});
 
 var app = builder.Build();
 

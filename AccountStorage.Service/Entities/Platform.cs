@@ -6,9 +6,10 @@ namespace AccountStorage.Service.Entities
     public class Platform
     {
         [Key]
+        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        
         public string Id { get; set; } = null!;
+        
         [Required]
         public string Name { get; set; } = null!;
 

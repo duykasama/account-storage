@@ -1,0 +1,41 @@
+﻿@page "/accounts"
+@implements IDisposable
+@inject IActionDispatcher Dispatcher
+@inject AccountStore AccountStore
+
+<h3>Accounts</h3>
+
+@foreach (var account in accounts)
+{
+    <div>@account.AccountName</div>    
+}
+
+@code {
+    ICollection<Account> accounts;
+
+    protected override Task OnInitializedAsync()
+    {
+        AccountStore.AddStateChangeListener(UpdateView);
+        accounts = AccountStore.GetState().Value;
+        return base.OnInitializedAsync();
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        Dispatcher.Dispatch(new LoadAccountsAction(null));
+        accounts = AccountStore.GetState().Value;
+        return base.OnParametersSetAsync();
+    }
+
+    private void UpdateView()
+    {
+        InvokeAsync(StateHasChanged);
+        //StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        AccountStore.RemoveStateChangeListener(UpdateView);
+    }
+
+}
