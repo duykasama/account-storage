@@ -14,17 +14,50 @@ namespace AccountStorage.Service.Services
         }
         #endregion
 
-        public async Task<IEnumerable<Category>> GetCategoriesAsync() => await _dbContext.Categories.ToListAsync();
+        public async Task<ICollection<Category>> GetCategoriesAsync() => await _dbContext.Categories
+            .AsNoTracking()
+            .ToListAsync();
 
-        public async Task<Category?> GetCategoryByIdAsync(string id) => await _dbContext.Categories.FindAsync(id);
+        public async Task<Category?> GetCategoryByIdAsync(string id) => await _dbContext.Categories
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id);
 
-        public async Task AddCategories(ICollection<Category> categories)
+        public async Task<bool> AddCategoriesAsync(ICollection<Category> categories)
         {
-            await _dbContext.Categories.AddRangeAsync(categories);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                await _dbContext.Categories.AddRangeAsync(categories);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<Category?> GetCategoryByNameAsync(string name) => await _dbContext.Categories
+            .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Name == name);
+
+        public async Task<bool> AddCategoryAsync(Category category)
+        {
+            var c = await GetCategoryByIdAsync(category.Id);
+            if (c is not null)
+            {
+                return false;
+            }
+
+            try
+            {
+                await _dbContext.AddAsync(category);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

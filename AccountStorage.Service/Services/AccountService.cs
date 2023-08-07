@@ -21,7 +21,6 @@ namespace AccountStorage.Service.Services
             var a = await GetAccountByIdAsync(account.Id);
             if (a is not null)
             {
-                //throw new Exception("AccountId already exists");
                 return false;
             }
 
@@ -34,7 +33,6 @@ namespace AccountStorage.Service.Services
             }
             catch
             {
-                //throw new Exception($"Failed to create account {account.AccountName}");
                 return false;
             }
         }
@@ -44,7 +42,6 @@ namespace AccountStorage.Service.Services
             var a = await GetAccountByIdAsync(id);
             if (a is null)
             {
-                //throw new Exception("AccountId doesn't exist");
                 return false;
             }
 
@@ -56,23 +53,40 @@ namespace AccountStorage.Service.Services
             }
             catch
             {
-                //throw new Exception($"Failed to delete account with {id}");
                 return false;
             }
         }
 
-        public async Task<Account?> GetAccountByIdAsync(string id) => await _dbContext.Accounts.FindAsync(id);
-
+        public async Task<Account?> GetAccountByIdAsync(string id) => await _dbContext.Accounts
+            .Include(a => a.Platform)
+            .Include(a => a.Category)
+            .Include(a => a.User)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.Id == id);
 
         public async Task<ICollection<Account>> GetAccountsAsync() => await _dbContext.Accounts
             .Include(a => a.Platform)
+            .AsNoTracking()
             .ToListAsync();
 
-        public async Task<IEnumerable<Platform>> GetPlatformsAsync() => await _dbContext.Platforms.AsNoTracking().ToListAsync();
-
-        public Task<bool> UpdateAccount(Account account)
+        public async Task<bool> UpdateAccount(Account account)
         {
-            throw new NotImplementedException();
+            var a = await GetAccountByIdAsync(account.Id);
+            if (a is null)
+            {
+                return false;
+            }
+
+            try
+            {
+                _dbContext.Accounts.Update(account);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         
