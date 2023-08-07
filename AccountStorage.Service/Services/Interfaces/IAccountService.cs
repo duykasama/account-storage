@@ -7,11 +7,8 @@ namespace AccountStorage.Service.Services.Interfaces
     {
         Task<ICollection<Account>> GetAccountsAsync();
         Task<Account?> GetAccountByIdAsync(string id);
-        Task DeleteAccountByIdAsync(string id);
-        Task<Account> UpdateAccount(Account account);
-        Task CreateAccountAsync(Account account);
-        Task<Platform?> GetPlatformByNameAsync(string name);
-        Task<IEnumerable<Platform>> GetPlatformsAsync();
-        ICollection<Account> GetAccounts();
+        Task<bool> DeleteAccountByIdAsync(string id);
+        Task<bool> UpdateAccount(Account account);
+        Task<bool> CreateAccountAsync(Account account);
     }
 }

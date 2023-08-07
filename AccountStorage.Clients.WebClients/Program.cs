@@ -2,6 +2,7 @@ using AccountStorage.Clients.WebClients.Areas.Identity;
 using AccountStorage.Clients.WebClients.Flux.Dispatcher;
 using AccountStorage.Clients.WebClients.Flux.Interfaces;
 using AccountStorage.Clients.WebClients.Flux.Stores.AccountStore;
+using AccountStorage.Clients.WebClients.Flux.Stores.CounterStore;
 using AccountStorage.Service.Entities;
 using AccountStorage.Service.Services;
 using AccountStorage.Service.Services.Interfaces;
@@ -31,6 +32,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<SystemUser>>();
 builder.Services.AddScoped<IActionDispatcher, ActionDispatcher>();
 builder.Services.AddScoped<AccountStore>();
+builder.Services.AddScoped<CounterStore>();
 
 var app = builder.Build();
 

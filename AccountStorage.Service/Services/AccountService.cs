@@ -16,12 +16,13 @@ namespace AccountStorage.Service.Services
         }
         #endregion
 
-        public async Task CreateAccountAsync(Account account)
+        public async Task<bool> CreateAccountAsync(Account account)
         {
             var a = await GetAccountByIdAsync(account.Id);
             if (a is not null)
             {
-                throw new Exception("AccountId already exists");
+                //throw new Exception("AccountId already exists");
+                return false;
             }
 
             try
@@ -29,47 +30,47 @@ namespace AccountStorage.Service.Services
                 _dbContext.Entry(account).State = EntityState.Modified;
                 await _dbContext.Accounts.AddAsync(account);
                 await _dbContext.SaveChangesAsync();
+                return true;
             }
             catch
             {
-                throw new Exception($"Failed to create account {account.AccountName}");
+                //throw new Exception($"Failed to create account {account.AccountName}");
+                return false;
             }
         }
 
-        public async Task DeleteAccountByIdAsync(string id)
+        public async Task<bool> DeleteAccountByIdAsync(string id)
         {
             var a = await GetAccountByIdAsync(id);
             if (a is null)
             {
-                throw new Exception("AccountId doesn't exist");
+                //throw new Exception("AccountId doesn't exist");
+                return false;
             }
 
             try
             {
                 _dbContext.Remove(a);
                 await _dbContext.SaveChangesAsync();
+                return true;
             }
             catch
             {
-                throw new Exception($"Failed to delete account with {id}");
+                //throw new Exception($"Failed to delete account with {id}");
+                return false;
             }
         }
 
         public async Task<Account?> GetAccountByIdAsync(string id) => await _dbContext.Accounts.FindAsync(id);
 
-        public ICollection<Account> GetAccounts() => _dbContext.Accounts.ToList();
 
         public async Task<ICollection<Account>> GetAccountsAsync() => await _dbContext.Accounts
             .Include(a => a.Platform)
             .ToListAsync();
-        
-        public async Task<Platform?> GetPlatformByNameAsync(string name) => await _dbContext.Platforms
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Name == name);
 
         public async Task<IEnumerable<Platform>> GetPlatformsAsync() => await _dbContext.Platforms.AsNoTracking().ToListAsync();
 
-        public Task<Account> UpdateAccount(Account account)
+        public Task<bool> UpdateAccount(Account account)
         {
             throw new NotImplementedException();
         }

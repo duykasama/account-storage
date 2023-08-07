@@ -4,10 +4,12 @@
 @inject AccountStore AccountStore
 
 <h3>Accounts</h3>
-
-@foreach (var account in accounts)
+@if (accounts is not null)
 {
-    <div>@account.AccountName</div>    
+    @foreach (var account in accounts)
+    {
+        <div>@account.AccountName</div>    
+    }
 }
 
 @code {
@@ -15,9 +17,10 @@
 
     protected override Task OnInitializedAsync()
     {
-        AccountStore.AddStateChangeListener(UpdateView);
-        accounts = AccountStore.GetState().Value;
-        return base.OnInitializedAsync();
+        return Task.Run(() =>
+        {
+            AccountStore.AddStateChangeListener(UpdateView);
+        });
     }
 
     protected override Task OnParametersSetAsync()
@@ -30,7 +33,6 @@
     private void UpdateView()
     {
         InvokeAsync(StateHasChanged);
-        //StateHasChanged();
     }
 
     public void Dispose()

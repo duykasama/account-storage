@@ -5,6 +5,6 @@ namespace AccountStorage.Clients.WebClients.Flux.Interfaces
     public interface IAction
     {
         public string Name { get; }
-        public Account Target { get; }
+        public Account? Target { get; }
     }
 }
