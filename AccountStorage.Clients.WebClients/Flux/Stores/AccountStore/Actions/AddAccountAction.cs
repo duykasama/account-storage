@@ -15,6 +15,6 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore.Actions
 
         public string Name => ADD_ACCOUNT;
 
-        public Account? Target => target;
+        public object? Target => target;
     }
 }

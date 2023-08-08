@@ -14,9 +14,9 @@ namespace AccountStorage.Service.Services
         }
         #endregion
 
-        public async Task<ICollection<Category>> GetCategoriesAsync() => await _dbContext.Categories
+        public ICollection<Category> GetCategories() => _dbContext.Categories
             .AsNoTracking()
-            .ToListAsync();
+            .ToList();
 
         public async Task<Category?> GetCategoryByIdAsync(string id) => await _dbContext.Categories
             .AsNoTracking()

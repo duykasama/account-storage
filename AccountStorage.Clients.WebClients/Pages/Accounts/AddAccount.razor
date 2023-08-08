@@ -1,9 +1,10 @@
 ﻿@page "/add-account"
-@using AccountStorage.Clients.WebClients.Enums;
+@using AccountStorage.Clients.WebClients.Flux.Stores.CategoryStore.Actions;
 @implements IDisposable
-@inject IActionDispatcher Dispatcher
+@inject IActionDispatcher<IAction> Dispatcher
 @inject AccountStore AccountStore
-
+@inject PlatformStore PlatformStore
+@inject CategoryStore CategoryStore
 
 <h1 class="text-center">Add New Account</h1>
 
@@ -24,22 +25,44 @@
             <label for="exampleInputPassword1" class="form-label mt-4">Password</label>
             <InputText type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" autocomplete="off" @bind-Value="@account.Password" required></InputText>
         </div>
-        <div class="form-group">
+        @*<div class="form-group">
             <label for="platform" class="form-label mt-4">Platform</label>
             <InputText class="form-control" id="platform" aria-describedby="emailHelp" placeholder="Enter platform name" @bind-Value="@platform.Name" required></InputText>
         </div>
         <div class="form-group">
             <label for="category" class="form-label mt-4">Category</label>
             <InputText class="form-control" id="category" aria-describedby="emailHelp" placeholder="Enter category" @bind-Value="@category.Name" required></InputText>
+        </div>*@
+        <div class="form-group">
+            <label for="exampleSelect1" class="form-label mt-4">Select platform</label>
+            <InputSelect class="form-select" id="exampleDisabledSelect1" @bind-Value="@platform.Id">
+                @foreach (var f in platforms)
+                {
+                    <option>@f.Name</option>
+                }
+                <option>Other</option>
+            </InputSelect>
+        </div>
+        <div class="form-group">
+            <label for="exampleSelect1" class="form-label mt-4">Select categroy</label>
+            <InputSelect class="form-select" id="exampleDisabledSelect1" @bind-Value="@category.Id">
+                @foreach (var c in categories)
+                {
+                    <option>@c.Name</option>
+                }
+                <option>Other</option>
+            </InputSelect>
         </div>
         <div class="form-group text-end mt-3">
             <button type="submit" class="btn btn-secondary">Submit</button>
         </div>
     </EditForm>
 </div>
-<CascadingValue Name="Display" Value="@DisplayModalBox">
-    <ModalBoxComponent Title="@modalBoxTitle" Content="@modalBoxMessage" />
-</CascadingValue>
+
+@if (DisplayModalBox)
+{
+    <ModalBoxComponent HideModalBox="HideModalBox" Title="@modalBoxTitle" Message="@modalBoxMessage" />
+}
 
 @*<div>
     <button @onclick="Show">Display</button>
@@ -144,11 +167,11 @@
     private Account account = new Account();
     private Platform platform = new Platform();
     private Category category = new Category();
-
-    private string modalBoxMessage = "Title";
-    private string modalBoxTitle = "Hello";
-
-    private bool DisplayModalBox { get; set; }
+    private ICollection<Platform> platforms = new List<Platform>();
+    private ICollection<Category> categories = new List<Category>();
+    private string modalBoxMessage = string.Empty;
+    private string modalBoxTitle = string.Empty;
+    private bool DisplayModalBox { get; set; } = false;
 
     private void HandleFormSubmission()
     {
@@ -162,45 +185,52 @@
             // display success message
             modalBoxTitle = "Notification";
             modalBoxMessage = "Account created successfully";
-            DisplayModalBox = true;
+            account = new Account();
 
         }
         else if (AccountStore.GetState().Status == Status.FAILURE)
         {
             // display failure message
             modalBoxTitle = "Error";
-            modalBoxMessage = "An error occurred";
-            DisplayModalBox = true;
+            modalBoxMessage = "Could not add your account";
         }
         else
         {
             // unknown
+            modalBoxTitle = "?????";
+            modalBoxMessage = "Something went wrong";
         }
+        DisplayModalBox = true;
+        //AccountStore.BroadcastStateChange();
     }
 
-    private void Show()
+    private void HideModalBox()
     {
-        DisplayModalBox = !DisplayModalBox;
+        DisplayModalBox = false;
     }
 
-    protected override Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
+        base.OnInitializedAsync();
         AccountStore.AddStateChangeListener(UpdateView);
-        return base.OnInitializedAsync();
+        PlatformStore.AddStateChangeListener(UpdateView);
+        CategoryStore.AddStateChangeListener(UpdateView);
+
+        Dispatcher.Dispatch(new LoadPlatformsAction(null));
+        Dispatcher.Dispatch(new LoadCategoriesAction(null));
+        platforms = PlatformStore.GetState().Value;
+        categories = CategoryStore.GetState().Value;
     }
 
-    protected override Task OnParametersSetAsync()
+    private void UpdateView()
     {
-        return base.OnParametersSetAsync();
-    }
-
-    private async void UpdateView()
-    {
-        await InvokeAsync(StateHasChanged);
+        StateHasChanged();
     }
 
     public void Dispose()
     {
         AccountStore.RemoveStateChangeListener(UpdateView);
+        PlatformStore.RemoveStateChangeListener(UpdateView);
+        CategoryStore.RemoveStateChangeListener(UpdateView);
     }
 }

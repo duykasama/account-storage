@@ -43,13 +43,13 @@ namespace AccountStorage.Test.ServiceTests
                 LastModification = DateTime.Now,
             };
 
-            Assert.True(await _accountService.CreateAccountAsync(account));
+            Assert.True(_accountService.CreateAccount(account));
         }
 
         [Fact]
         public async void TestGetAccounts()
         {
-            var accounts = await _accountService.GetAccountsAsync();
+            var accounts = _accountService.GetAccountsAsync();
             Assert.NotNull(accounts);
             Assert.NotEmpty(accounts);
         }
@@ -57,7 +57,7 @@ namespace AccountStorage.Test.ServiceTests
         [Fact]
         public async void TestGetAccountById()
         {
-            var account = await _accountService.GetAccountByIdAsync("83ece864-0a4a-4af9-8ca2-941f494f070e");
+            var account = _accountService.GetAccountByIdAsync("83ece864-0a4a-4af9-8ca2-941f494f070e");
             Assert.NotNull(account);
         }
         
@@ -70,7 +70,7 @@ namespace AccountStorage.Test.ServiceTests
         [Fact]
         public async void TestUpdateAccount()
         {
-            var account = await _accountService.GetAccountByIdAsync("83ece864-0a4a-4af9-8ca2-941f494f070e");
+            var account = _accountService.GetAccountByIdAsync("83ece864-0a4a-4af9-8ca2-941f494f070e");
             Assert.NotNull(account);
 
             account.AccountName = "Thanh Duy";

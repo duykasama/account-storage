@@ -16,9 +16,9 @@ namespace AccountStorage.Service.Services
         }
         #endregion
 
-        public async Task<bool> CreateAccountAsync(Account account)
+        public bool CreateAccount(Account account)
         {
-            var a = await GetAccountByIdAsync(account.Id);
+            var a = GetAccountByIdAsync(account.Id);
             if (a is not null)
             {
                 return false;
@@ -26,9 +26,8 @@ namespace AccountStorage.Service.Services
 
             try
             {
-                _dbContext.Entry(account).State = EntityState.Modified;
-                await _dbContext.Accounts.AddAsync(account);
-                await _dbContext.SaveChangesAsync();
+                _dbContext.Accounts.Add(account);
+                _dbContext.SaveChanges();
                 return true;
             }
             catch
@@ -39,7 +38,7 @@ namespace AccountStorage.Service.Services
 
         public async Task<bool> DeleteAccountByIdAsync(string id)
         {
-            var a = await GetAccountByIdAsync(id);
+            var a = GetAccountByIdAsync(id);
             if (a is null)
             {
                 return false;
@@ -57,21 +56,21 @@ namespace AccountStorage.Service.Services
             }
         }
 
-        public async Task<Account?> GetAccountByIdAsync(string id) => await _dbContext.Accounts
+        public Account? GetAccountByIdAsync(string id) => _dbContext.Accounts
             .Include(a => a.Platform)
             .Include(a => a.Category)
             .Include(a => a.User)
             .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Id == id);
+            .FirstOrDefault(a => a.Id == id);
 
-        public async Task<ICollection<Account>> GetAccountsAsync() => await _dbContext.Accounts
+        public ICollection<Account> GetAccountsAsync() => _dbContext.Accounts
             .Include(a => a.Platform)
             .AsNoTracking()
-            .ToListAsync();
+            .ToList();
 
         public async Task<bool> UpdateAccount(Account account)
         {
-            var a = await GetAccountByIdAsync(account.Id);
+            var a = GetAccountByIdAsync(account.Id);
             if (a is null)
             {
                 return false;

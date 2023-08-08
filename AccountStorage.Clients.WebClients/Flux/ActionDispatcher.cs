@@ -1,8 +1,9 @@
 ﻿using AccountStorage.Clients.WebClients.Flux.Interfaces;
+using AccountStorage.Service.Entities;
 
-namespace AccountStorage.Clients.WebClients.Flux.Dispatcher
+namespace AccountStorage.Clients.WebClients.Flux
 {
-    public class ActionDispatcher : IActionDispatcher
+    public class ActionDispatcher : IActionDispatcher<IAction>
     {
         private Action<IAction> _registeredHandlers;
 

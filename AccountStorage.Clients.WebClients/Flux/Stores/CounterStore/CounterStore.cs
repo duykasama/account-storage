@@ -29,18 +29,23 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.CounterStore
         }
     }
 
-    public class CounterStore : StoreBase<List<int>>
+    public class CounterStore : StoreBase<List<int>, IAction>
     {
+        //protected override Action _registeredListeners { get => _registeredListeners; set => _registeredListeners = value; }
+        //protected override IActionDispatcher<IAction> _dispatcher { get => _dispatcher; set => _dispatcher = value; }
+        //protected override State<List<int>> _state { get => _state; set => _state = value; }
+
         private Action _registeredListeners;
-        private IActionDispatcher _dispatcher;
+        private IActionDispatcher<IAction> _dispatcher;
         private State<List<int>> _state;
+
         private CounterService _counterService;
 
-        public CounterStore(IActionDispatcher actionDispatcher)
+        public CounterStore(IActionDispatcher<IAction> actionDispatcher)
         {
-            _state = new State<List<int>>(new List<int>() { }, Status.NONE);
             _dispatcher = actionDispatcher;
             _dispatcher.Subscribe(HandleActions);
+            _state = new State<List<int>>(new List<int>(), Status.NONE);
             _counterService = new CounterService();
         }
 
@@ -50,7 +55,7 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.CounterStore
 
         public override void RemoveStateChangeListener(Action listener) => _registeredListeners -= listener;
 
-        protected override void BroadcastStateChange() => _registeredListeners?.Invoke();
+        public override void BroadcastStateChange() => _registeredListeners?.Invoke();
 
         protected override void HandleActions(IAction action)
         {

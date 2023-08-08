@@ -1,8 +1,11 @@
 using AccountStorage.Clients.WebClients.Areas.Identity;
-using AccountStorage.Clients.WebClients.Flux.Dispatcher;
+using AccountStorage.Clients.WebClients.Flux;
 using AccountStorage.Clients.WebClients.Flux.Interfaces;
 using AccountStorage.Clients.WebClients.Flux.Stores.AccountStore;
+using AccountStorage.Clients.WebClients.Flux.Stores.AccountStore.Actions;
+using AccountStorage.Clients.WebClients.Flux.Stores.CategoryStore;
 using AccountStorage.Clients.WebClients.Flux.Stores.CounterStore;
+using AccountStorage.Clients.WebClients.Flux.Stores.PlatformStore;
 using AccountStorage.Service.Entities;
 using AccountStorage.Service.Services;
 using AccountStorage.Service.Services.Interfaces;
@@ -30,8 +33,10 @@ builder.Services.AddIdentity<SystemUser, IdentityRole>(options => options.SignIn
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<SystemUser>>();
-builder.Services.AddScoped<IActionDispatcher, ActionDispatcher>();
+builder.Services.AddScoped<IActionDispatcher<IAction>, ActionDispatcher>();
 builder.Services.AddScoped<AccountStore>();
+builder.Services.AddScoped<PlatformStore>();
+builder.Services.AddScoped<CategoryStore>();
 builder.Services.AddScoped<CounterStore>();
 
 var app = builder.Build();

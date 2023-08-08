@@ -9,6 +9,6 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.CounterStore.Actions
 
         public string Name => INCREMENT_COUNT;
 
-        public Account Target => null;
+        public object? Target => null;
     }
 }

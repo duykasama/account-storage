@@ -1,10 +1,11 @@
-﻿using System.Collections.ObjectModel;
+﻿using AccountStorage.Clients.WebClients.Flux.Interfaces;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AccountStorage.Service.Entities
 {
-    public class Category
+    public class Category : DbEntity
     {
         [Key]
         [Required]

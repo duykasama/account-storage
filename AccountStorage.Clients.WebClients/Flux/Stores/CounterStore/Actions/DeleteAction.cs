@@ -9,6 +9,6 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.CounterStore.Actions
 
         public string Name => DELETE_ACTION;
 
-        public Account? Target => null;
+        public object? Target => null;
     }
 }

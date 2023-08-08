@@ -1,6 +1,6 @@
 ﻿@page "/accounts"
 @implements IDisposable
-@inject IActionDispatcher Dispatcher
+@inject IActionDispatcher<IAction> Dispatcher
 @inject AccountStore AccountStore
 
 <h3>Accounts</h3>
@@ -25,7 +25,7 @@
 
     protected override Task OnParametersSetAsync()
     {
-        Dispatcher.Dispatch(new LoadAccountsAction(null));
+        //Dispatcher.Dispatch(new LoadAccountsAction(null));
         accounts = AccountStore.GetState().Value;
         return base.OnParametersSetAsync();
     }

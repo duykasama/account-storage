@@ -3,7 +3,7 @@
 @using AccountStorage.Clients.WebClients.Flux.Stores.CounterStore.Actions;
 @implements IDisposable
 @inject CounterStore CounterStore
-@inject IActionDispatcher ActionDispatcher
+@inject IActionDispatcher<IAction> ActionDispatcher
 
 <PageTitle>Counter</PageTitle>
 
@@ -42,13 +42,13 @@
 
     private void Load()
     {
-        ActionDispatcher.Dispatch(new LoadAction());
+        //ActionDispatcher.Dispatch(new LoadAction());
         list = CounterStore.GetState().Value;
     }
 
     private void Delete()
     {
-        ActionDispatcher.Dispatch(new DeleteAction());
+        //ActionDispatcher.Dispatch(new DeleteAction());
         list = CounterStore.GetState().Value;
     }
 
@@ -63,7 +63,7 @@
         for(int i = 0; i < 10; i++)
         {
             show = !show;
-            ActionDispatcher.Dispatch(new DeleteAction());
+            //ActionDispatcher.Dispatch(new DeleteAction());
            
             Thread.Sleep(2000);
         }

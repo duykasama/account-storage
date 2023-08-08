@@ -1,9 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AccountStorage.Clients.WebClients.Flux.Interfaces;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AccountStorage.Service.Entities
 {
-    public class Platform
+    public class Platform : DbEntity
     {
         [Key]
         [Required]

@@ -7,19 +7,20 @@ using AccountStorage.Service.Services.Interfaces;
 
 namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
 {
-    public class AccountStore : StoreBase<ICollection<Account>>
+    public class AccountStore : StoreBase<ICollection<Account>, IAction>
     {
-        private Action _registeredListeners;
-        private IActionDispatcher _dispatcher;
-        private State<ICollection<Account>> _state;
         private IAccountService _accountService;
 
-        public AccountStore(IActionDispatcher dispatcher)
+        private Action _registeredListeners;
+        private IActionDispatcher<IAction> _dispatcher;
+        private State<ICollection<Account>> _state;
+
+        public AccountStore(IActionDispatcher<IAction> actionDispatcher)
         {
+            _dispatcher = actionDispatcher;
+            _dispatcher.Subscribe(HandleActions);
             _state = new State<ICollection<Account>>(new List<Account>(), Status.NONE);
             _accountService = new AccountService();
-            _dispatcher = dispatcher;
-            _dispatcher.Subscribe(HandleActions);
         }
 
         public override State<ICollection<Account>> GetState() => _state;
@@ -28,43 +29,43 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
 
         public override void RemoveStateChangeListener(Action listener) => _registeredListeners -= listener;
 
-        protected override void BroadcastStateChange() => _registeredListeners?.Invoke();
+        public override void BroadcastStateChange() => _registeredListeners?.Invoke();
 
-        protected override async void HandleActions(IAction action)
+        protected override void HandleActions(IAction action)
         {
             switch (action)
             {
                 case LoadAccountsAction:
-                    await LoadAccounts();
+                    LoadAccounts();
                     break;
                 case AddAccountAction:
-                    await AddAccount(action.Target);
+                    AddAccount(action.Target as Account);
                     break;
-                case DeleteAccountAction: 
+                case DeleteAccountAction:
                     break;
                 case UpdateAccountAction:
                     break;
-                default: 
+                default:
                     return;
             }
-            BroadcastStateChange();
         }
 
-        private async Task LoadAccounts()
+        private void LoadAccounts()
         {
-            _state = new State<ICollection<Account>>(await _accountService.GetAccountsAsync(), Status.NONE);
+            _state = new State<ICollection<Account>>(_accountService.GetAccountsAsync(), Status.NONE);
         }
 
-        private async Task AddAccount(Account? target)
+        private void AddAccount(Account? target)
         {
             if (target is null)
             {
-                throw new ArgumentNullException(nameof(target));
+                _state = new State<ICollection<Account>>(_state.Value, Status.FAILURE);
+                return;
             }
 
-            if (await _accountService.CreateAccountAsync(target))
+            if (_accountService.CreateAccount(target))
             {
-                _state = new State<ICollection<Account>>(await _accountService.GetAccountsAsync(), Status.SUCCESS);
+                _state = new State<ICollection<Account>>(_accountService.GetAccountsAsync(), Status.SUCCESS);
             }
             else
             {

@@ -1,9 +1,9 @@
 ﻿namespace AccountStorage.Clients.WebClients.Flux.Interfaces
 {
-    public interface IActionDispatcher
+    public interface IActionDispatcher<T>
     {
-        void Dispatch(IAction action);
-        void Subscribe(Action<IAction> action);
-        void Unsubscribe(Action<IAction> action);
+        void Dispatch(T action);
+        void Subscribe(Action<T> action);
+        void Unsubscribe(Action<T> action);
     }
 }
