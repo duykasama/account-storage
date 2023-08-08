@@ -36,9 +36,9 @@ namespace AccountStorage.Service.Services
             }
         }
 
-        public async Task<Category?> GetCategoryByNameAsync(string name) => await _dbContext.Categories
+        public Category? GetCategoryByName(string name) => _dbContext.Categories
             .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Name == name);
+            .FirstOrDefault(c => c.Name == name);
 
         public async Task<bool> AddCategoryAsync(Category category)
         {

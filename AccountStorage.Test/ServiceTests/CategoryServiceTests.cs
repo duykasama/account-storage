@@ -25,7 +25,7 @@ namespace AccountStorage.Test.ServiceTests
         [Fact]
         public async void TestGetCategories()
         {
-            var categories = await _categorySevice.GetCategoriesAsync();
+            var categories = _categorySevice.GetCategories();
             Assert.NotNull(categories);
             Assert.NotEmpty(categories);
         }
@@ -40,26 +40,24 @@ namespace AccountStorage.Test.ServiceTests
         [Fact]
         public async void TestGetCategoryByName()
         {
-            var category = await _categorySevice.GetCategoryByNameAsync("Social media");
+            var category = _categorySevice.GetCategoryByName("Social media");
             Assert.NotNull(category);
         }
 
-        [Fact]
-        public async void TestAddMultipleCategories()
+        [Theory]
+        [InlineData("Study")]
+        [InlineData("Work")]
+        [InlineData("Social media")]
+        [InlineData("Game")]
+        [InlineData("Entertainment")]
+        [InlineData("Other")]
+        public async void TestAddMultipleCategories(string categoryName)
         {
             List<Category> categories = new List<Category>()
             {
                 new()
                 {
-                    Name = "Test",
-                },
-                new()
-                {
-                    Name = "Work",
-                },
-                new()
-                {
-                    Name = "Entertainment",
+                    Name = categoryName,
                 },
             };
 

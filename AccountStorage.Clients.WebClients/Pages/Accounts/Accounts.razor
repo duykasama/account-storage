@@ -23,15 +23,19 @@
         });
     }
 
-    protected override Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        //Dispatcher.Dispatch(new LoadAccountsAction(null));
-        accounts = AccountStore.GetState().Value;
-        return base.OnParametersSetAsync();
+        //await Task.Run(() =>
+        //{
+        //    Dispatcher.Dispatch(new LoadAccountsAction(null));
+        //}).WaitAsync(CancellationToken.None);
+        Dispatcher.Dispatch(new LoadAccountsAction(null));
+        //return base.OnParametersSetAsync();
     }
 
     private void UpdateView()
     {
+        accounts = AccountStore.GetState().Value;
         InvokeAsync(StateHasChanged);
     }
 

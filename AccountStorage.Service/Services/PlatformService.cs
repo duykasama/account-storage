@@ -59,9 +59,9 @@ namespace AccountStorage.Service.Services
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == id);
 
-        public async Task<Platform?> GetPlatformByNameAsync(string name) => await _dbContext.Platforms
+        public Platform? GetPlatformByName(string name) => _dbContext.Platforms
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Name == name);
+            .FirstOrDefault(p => p.Name == name);
 
         public ICollection<Platform> GetPlatforms() => _dbContext.Platforms
             .AsNoTracking()

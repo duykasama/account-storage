@@ -18,7 +18,7 @@ namespace AccountStorage.Service.Services
 
         public bool CreateAccount(Account account)
         {
-            var a = GetAccountByIdAsync(account.Id);
+            var a = GetAccountById(account.Id);
             if (a is not null)
             {
                 return false;
@@ -26,6 +26,7 @@ namespace AccountStorage.Service.Services
 
             try
             {
+                _dbContext.Entry(account).State = EntityState.Modified;
                 _dbContext.Accounts.Add(account);
                 _dbContext.SaveChanges();
                 return true;
@@ -36,9 +37,9 @@ namespace AccountStorage.Service.Services
             }
         }
 
-        public async Task<bool> DeleteAccountByIdAsync(string id)
+        public async Task<bool> DeleteAccountById(string id)
         {
-            var a = GetAccountByIdAsync(id);
+            var a = GetAccountById(id);
             if (a is null)
             {
                 return false;
@@ -56,21 +57,14 @@ namespace AccountStorage.Service.Services
             }
         }
 
-        public Account? GetAccountByIdAsync(string id) => _dbContext.Accounts
-            .Include(a => a.Platform)
-            .Include(a => a.Category)
-            .Include(a => a.User)
-            .AsNoTracking()
-            .FirstOrDefault(a => a.Id == id);
-
-        public ICollection<Account> GetAccountsAsync() => _dbContext.Accounts
+        public ICollection<Account> GetAccounts() => _dbContext.Accounts
             .Include(a => a.Platform)
             .AsNoTracking()
             .ToList();
 
         public async Task<bool> UpdateAccount(Account account)
         {
-            var a = GetAccountByIdAsync(account.Id);
+            var a = GetAccountById(account.Id);
             if (a is null)
             {
                 return false;
@@ -88,6 +82,34 @@ namespace AccountStorage.Service.Services
             }
         }
 
-        
+        public Account? GetAccountById(string id) => _dbContext.Accounts
+            .Include(a => a.Platform)
+            .Include(a => a.Category)
+            .Include(a => a.User)
+            .AsNoTracking()
+            .FirstOrDefault(a => a.Id == id);
+
+        public Task<bool> CreateAccountAsync(Account account)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteAccountByIdAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Account?> GetAccountByIdAsync(string id) => await _dbContext.Accounts
+            .AsNoTracking()
+            .FirstAsync();
+
+        public async Task<ICollection<Account>> GetAccountsAsync() => await _dbContext.Accounts
+            .AsNoTracking()
+            .ToListAsync();
+
+        public Task<bool> UpdateAccountAsync(Account account)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

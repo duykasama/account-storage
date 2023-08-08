@@ -6,7 +6,7 @@ namespace AccountStorage.Service.Services.Interfaces
     {
         ICollection<Category> GetCategories();
         Task<Category?> GetCategoryByIdAsync(string id);
-        Task<Category?> GetCategoryByNameAsync(string name);
+        Category? GetCategoryByName(string name);
         Task<bool> AddCategoriesAsync(ICollection<Category> categories);
         Task<bool> AddCategoryAsync(Category category);
     }

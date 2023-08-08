@@ -38,7 +38,7 @@ namespace AccountStorage.Test.ServiceTests
         [Fact]
         public async void TestDeletePlatform()
         {
-            var platform = await _platformService.GetPlatformByNameAsync("something");
+            var platform = _platformService.GetPlatformByName("something");
 
             Assert.NotNull(platform);
 
@@ -56,16 +56,16 @@ namespace AccountStorage.Test.ServiceTests
         }
 
         [Fact]
-        public async void TestGetPlatformByName()
+        public void TestGetPlatformByName()
         {
-            var platform = await _platformService.GetPlatformByNameAsync("YouTube");
+            var platform = _platformService.GetPlatformByName("YouTube");
             Assert.NotNull(platform);
         }
 
         [Fact]
-        public async void TestGetPlatforms()
+        public void TestGetPlatforms()
         {
-            var platforms = await _platformService.GetPlatformsAsync();
+            var platforms = _platformService.GetPlatforms();
             Assert.NotNull(platforms);
             Assert.NotEmpty(platforms);
         }

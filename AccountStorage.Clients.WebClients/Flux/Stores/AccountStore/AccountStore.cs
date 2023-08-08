@@ -31,12 +31,12 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
 
         public override void BroadcastStateChange() => _registeredListeners?.Invoke();
 
-        protected override void HandleActions(IAction action)
+        protected override async void HandleActions(IAction action)
         {
             switch (action)
             {
                 case LoadAccountsAction:
-                    LoadAccounts();
+                    await LoadAccounts();
                     break;
                 case AddAccountAction:
                     AddAccount(action.Target as Account);
@@ -48,11 +48,14 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
                 default:
                     return;
             }
+            BroadcastStateChange();
         }
 
-        private void LoadAccounts()
+        private async Task LoadAccounts()
         {
-            _state = new State<ICollection<Account>>(_accountService.GetAccountsAsync(), Status.NONE);
+            var accounts = await _accountService.GetAccountsAsync();
+            //accounts = _accountService.GetAccounts();
+            _state = new State<ICollection<Account>>(accounts, Status.NONE);
         }
 
         private void AddAccount(Account? target)
@@ -65,7 +68,7 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
 
             if (_accountService.CreateAccount(target))
             {
-                _state = new State<ICollection<Account>>(_accountService.GetAccountsAsync(), Status.SUCCESS);
+                _state = new State<ICollection<Account>>(_accountService.GetAccounts(), Status.SUCCESS);
             }
             else
             {

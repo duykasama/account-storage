@@ -7,6 +7,7 @@
 @inject CategoryStore CategoryStore
 
 <h1 class="text-center">Add New Account</h1>
+<h1 class="text-center">@_authState.User.Identity.Name</h1>
 
 <div class="d-flex justify-content-center align-items-center">
     <EditForm Model="@account" OnSubmit="HandleFormSubmission" class="form-control w-50 p-5">
@@ -25,14 +26,6 @@
             <label for="exampleInputPassword1" class="form-label mt-4">Password</label>
             <InputText type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" autocomplete="off" @bind-Value="@account.Password" required></InputText>
         </div>
-        @*<div class="form-group">
-            <label for="platform" class="form-label mt-4">Platform</label>
-            <InputText class="form-control" id="platform" aria-describedby="emailHelp" placeholder="Enter platform name" @bind-Value="@platform.Name" required></InputText>
-        </div>
-        <div class="form-group">
-            <label for="category" class="form-label mt-4">Category</label>
-            <InputText class="form-control" id="category" aria-describedby="emailHelp" placeholder="Enter category" @bind-Value="@category.Name" required></InputText>
-        </div>*@
         <div class="form-group">
             <label for="exampleSelect1" class="form-label mt-4">Select platform</label>
             <InputSelect class="form-select" id="exampleDisabledSelect1" @bind-Value="@platform.Id">
@@ -48,7 +41,9 @@
             <InputSelect class="form-select" id="exampleDisabledSelect1" @bind-Value="@category.Id">
                 @foreach (var c in categories)
                 {
-                    <option>@c.Name</option>
+                    @if (c.Name!= "Other"){
+                        <option>@c.Name</option>
+                    }
                 }
                 <option>Other</option>
             </InputSelect>
@@ -172,6 +167,22 @@
     private string modalBoxMessage = string.Empty;
     private string modalBoxTitle = string.Empty;
     private bool DisplayModalBox { get; set; } = false;
+    private AuthenticationState _authState;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        AccountStore.AddStateChangeListener(UpdateView);
+        PlatformStore.AddStateChangeListener(UpdateView);
+        CategoryStore.AddStateChangeListener(UpdateView);
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        Dispatcher.Dispatch(new LoadPlatformsAction(null));
+        Dispatcher.Dispatch(new LoadCategoriesAction(null));
+    }
 
     private void HandleFormSubmission()
     {
@@ -204,26 +215,23 @@
         //AccountStore.BroadcastStateChange();
     }
 
+    public void HandlePlatformChange(string value)
+    {
+        if (platform.Id.Equals("OTHER", StringComparison.OrdinalIgnoreCase))
+        {
+            DisplayModalBox = true;
+        }
+    }
+
     private void HideModalBox()
     {
         DisplayModalBox = false;
     }
 
-    protected override void OnInitialized()
-    {
-        base.OnInitializedAsync();
-        AccountStore.AddStateChangeListener(UpdateView);
-        PlatformStore.AddStateChangeListener(UpdateView);
-        CategoryStore.AddStateChangeListener(UpdateView);
-
-        Dispatcher.Dispatch(new LoadPlatformsAction(null));
-        Dispatcher.Dispatch(new LoadCategoriesAction(null));
-        platforms = PlatformStore.GetState().Value;
-        categories = CategoryStore.GetState().Value;
-    }
-
     private void UpdateView()
     {
+        platforms = PlatformStore.GetState().Value;
+        categories = CategoryStore.GetState().Value;
         StateHasChanged();
     }
 

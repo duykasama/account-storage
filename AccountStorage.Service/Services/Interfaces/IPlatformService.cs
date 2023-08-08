@@ -6,7 +6,7 @@ namespace AccountStorage.Service.Services.Interfaces
     {
         ICollection<Platform> GetPlatforms();
         Task<Platform?> GetPlatformByIdAsync(string id);
-        Task<Platform?> GetPlatformByNameAsync(string name);
+        Platform? GetPlatformByName(string name);
         Task<bool> CreatePlatformAsync(Platform platform);
         Task<bool> DeletePlatformAsync(Platform platform);
     }

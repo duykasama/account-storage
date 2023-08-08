@@ -38,7 +38,8 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.CategoryStore
                     break;
                 default:
                     break;
-            }         
+            }  
+            BroadcastStateChange();
         }
 
         private void LoadCategories() 
