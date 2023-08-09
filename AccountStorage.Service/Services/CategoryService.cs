@@ -8,9 +8,10 @@ namespace AccountStorage.Service.Services
     {
         #region initialize dbcontext
         private readonly AccountDbContext _dbContext;
-        public CategoryService()
+        public CategoryService(AccountDbContext dbContext)
         {
-            _dbContext = new AccountDbContext();
+            //_dbContext = new AccountDbContext();
+            _dbContext = dbContext;
         }
         #endregion
 

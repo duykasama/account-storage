@@ -33,13 +33,13 @@
         </div>
         <div class="form-group">
             <label for="exampleSelect1" class="form-label mt-4">Select platform</label>
-            <InputSelect class="form-select" id="exampleDisabledSelect1" @bind-Value="@platform.Id">
+            <InputSelect class="form-select" id="exampleDisabledSelect1" @bind-Value="@platformId">
                 <option selected>Not selected</option>
                 @foreach (var f in platforms)
                 {
                     @if(f != null)
                     {
-                        <option >@f.Name</option>
+                        <option value="@f.Id">@f.Name</option>
                     }
                 }
                 <option>Other</option>
@@ -47,7 +47,7 @@
         </div>
         <div class="form-group">
             <label for="exampleSelect1" class="form-label mt-4">Select categroy</label>
-            <InputSelect class="form-select" id="exampleDisabledSelect1" @bind-Value="@category.Id">
+            <InputSelect class="form-select" id="exampleDisabledSelect1" @bind-Value="@categoryId">
                 <option selected>Not selected</option>
                 @foreach (var c in categories)
                 {
@@ -55,7 +55,7 @@
                     {
                         @if (c.Name != "Other")
                         {
-                            <option>@c.Name</option>
+                            <option value="@c.Id">@c.Name</option>
                         }
                     }
                 }
@@ -79,8 +79,8 @@
     private AuthenticationState _authState;
     private SystemUser currentUser;
     private Account account = new Account();
-    private Platform platform = new Platform();
-    private Category category = new Category();
+    private string platformId = string.Empty;
+    private string categoryId = string.Empty;
     private ICollection<Platform> platforms = new List<Platform>();
     private ICollection<Category> categories = new List<Category>();
     private string modalBoxTitle = string.Empty;
@@ -94,10 +94,10 @@
 
     private void HandleFormSubmission()
     {
-        account.CreationDate = DateTime.UtcNow;
-        account.LastModification = DateTime.UtcNow;
-        Dispatcher.Dispatch(new LoadCategoryByIdAction(category.Id));
-        Dispatcher.Dispatch(new LoadPlatformByIdAction(platform.Id));
+        account.CreationDate = DateTime.Now;
+        account.LastModification = DateTime.Now;
+        Dispatcher.Dispatch(new LoadCategoryByIdAction(categoryId));
+        Dispatcher.Dispatch(new LoadPlatformByIdAction(platformId));
         var selectedCategory = CategoryStore.GetState().Value.First();
         var selectedPlatform = PlatformStore.GetState().Value.First();
         account.Category = selectedCategory;
@@ -131,7 +131,7 @@
 
     public void HandlePlatformChange(string value)
     {
-        if (platform.Id.Equals("OTHER", StringComparison.OrdinalIgnoreCase))
+        if (platformId.Equals("OTHER", StringComparison.OrdinalIgnoreCase))
         {
             DisplayModalBox = true;
         }

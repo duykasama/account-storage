@@ -3,6 +3,7 @@ using AccountStorage.Clients.WebClients.Flux.Interfaces;
 using AccountStorage.Clients.WebClients.Flux.Stores.CategoryStore.Actions;
 using AccountStorage.Service.Entities;
 using AccountStorage.Service.Services;
+using AccountStorage.Service.Services.Interfaces;
 
 namespace AccountStorage.Clients.WebClients.Flux.Stores.CategoryStore
 {
@@ -11,14 +12,15 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.CategoryStore
         private Action _stateChangeListeners;
         private IActionDispatcher<IAction> _actionDispatcher;
         private State<ICollection<Category>> _state;
-        private CategoryService _categoryService;
+        private ICategoryService _categoryService;
 
-        public CategoryStore(IActionDispatcher<IAction> actionDispatcher)
+        public CategoryStore(IActionDispatcher<IAction> actionDispatcher, ICategoryService categoryService)
         {
             _actionDispatcher = actionDispatcher;
             _actionDispatcher.Subscribe(HandleActions);
             _state = new State<ICollection<Category>>(new List<Category>(), Status.NONE);
-            _categoryService = new CategoryService();
+            //_categoryService = new CategoryService();
+            _categoryService = categoryService;
         }
 
         public override void AddStateChangeListener(Action listener) => _stateChangeListeners += listener;
@@ -37,7 +39,7 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.CategoryStore
                     await LoadCategories();
                     break;
                 case LoadCategoryByIdAction:
-                    await LoadCategoryById(action.Target as string);
+                    LoadCategoryById(action.Target as string);
                     break;
                 default:
                     return;
@@ -57,11 +59,11 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.CategoryStore
             }
         }
 
-        private async Task LoadCategoryById(string id)
+        private void LoadCategoryById(string id)
         {
             try
             {
-                var categories = new List<Category>() { await _categoryService.GetCategoryByIdAsync(id) };
+                var categories = new List<Category>() { _state.Value.First(c => c.Id == id) };
                 _state = new State<ICollection<Category>>(categories, Status.SUCCESS);
             }
             catch

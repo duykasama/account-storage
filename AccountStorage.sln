@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountStorage.Service", "A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountStorage.Clients.WebClients", "AccountStorage.Clients.WebClients\AccountStorage.Clients.WebClients.csproj", "{CA058051-62B8-475E-8293-7266ED44144C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AccountStorage.Test", "AccountStorage.Test\AccountStorage.Test.csproj", "{D975E9E3-FD34-4686-8E82-200407E5F44B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AccountStorage.Test", "AccountStorage.Test\AccountStorage.Test.csproj", "{D975E9E3-FD34-4686-8E82-200407E5F44B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

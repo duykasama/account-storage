@@ -20,5 +20,7 @@ namespace AccountStorage.Service.Entities
         public string? Url { get; set; }
         
         public virtual ICollection<Account> Accounts { get; set; } = new List<Account>();
+
+        public override string ToString() => Name;
     }
 }

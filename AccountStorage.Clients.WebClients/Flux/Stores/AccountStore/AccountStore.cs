@@ -15,12 +15,13 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
         private IActionDispatcher<IAction> _dispatcher;
         private State<ICollection<Account>> _state;
 
-        public AccountStore(IActionDispatcher<IAction> actionDispatcher)
+        public AccountStore(IActionDispatcher<IAction> actionDispatcher, IAccountService accountService)
         {
             _dispatcher = actionDispatcher;
             _dispatcher.Subscribe(HandleActions);
             _state = new State<ICollection<Account>>(new List<Account>(), Status.NONE);
-            _accountService = new AccountService();
+            //_accountService = new AccountService();
+            _accountService = accountService;
         }
 
         public override State<ICollection<Account>> GetState() => _state;

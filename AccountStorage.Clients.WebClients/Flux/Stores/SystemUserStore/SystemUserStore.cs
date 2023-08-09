@@ -14,12 +14,13 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.SystemUserStore
         private State<ICollection<SystemUser>> _state;
         private ISystemUserService _systemUserService;
 
-        public SystemUserStore(IActionDispatcher<IAction> actionDispatcher)
+        public SystemUserStore(IActionDispatcher<IAction> actionDispatcher, ISystemUserService systemUserService)
         {
             _dispatcher = actionDispatcher;
             _dispatcher.Subscribe(HandleActions);
             _state = new State<ICollection<SystemUser>>(new List<SystemUser>(), Status.NONE);
-            _systemUserService = new SystemUserService();
+            //_systemUserService = new SystemUserService();
+            _systemUserService = systemUserService;
         }
 
         public override void AddStateChangeListener(Action listener) => _registeredListeners += listener;

@@ -16,5 +16,7 @@ namespace AccountStorage.Service.Entities
         public string  Name { get; set; } = null!;
 
         public ICollection<Account> Accounts { get; set; } = new Collection<Account>();
+
+        public override string ToString() => Name;
     }
 }

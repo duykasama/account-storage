@@ -1,0 +1,78 @@
+﻿@typeparam TItem
+
+<table class="table">
+    <thead>
+        <tr>
+            @if (Columns is null || Columns.Count <= 0)
+            {
+                
+            }
+            else
+            {
+                foreach (var column in Columns)
+                {
+                    if (column.Alignment != Alignment.NotSet)
+                    {
+                        <th class="align-@column.Alignment.ToString().ToLower()">@column.Caption</th>
+                    }
+                    else
+                    {
+                        <th>@column.Caption</th>
+                    }
+                }
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @if (DataItems is not null)
+        {
+            @foreach (var item in DataItems)
+            {
+                <tr>
+                    @foreach (var column in Columns)
+                    {
+                        string value = typeof(TItem).GetProperty(column.DataField).GetValue(item).ToString();
+
+                        if (!string.IsNullOrEmpty(column.Format) || column.DataType != DataType.NotSet)
+                        {
+                            switch (column.DataType)
+                            {
+                                case DataType.Date:
+                                case DataType.DateTime:
+                                    value = DateTime.Parse(typeof(TItem).GetProperty(column.DataField).GetValue(item).ToString()).ToString(column.Format);
+                                    break;
+                                case DataType.Boolean:
+                                    value = Boolean.Parse(typeof(TItem).GetProperty(column.DataField).GetValue(item).ToString()).ToString();
+                                    break;
+                                case DataType.Currency:
+                                    value = Math.Round(Double.Parse(typeof(TItem).GetProperty(column.DataField).GetValue(item).ToString()), 2).ToString("vnd");
+                                    break;
+                            }
+                        }
+
+                        if (column.Alignment != Alignment.NotSet)
+                        {
+                            <td align="@column.Alignment.ToString().ToLower()">@value</td>
+                        }
+                        else
+                        {
+                            <td>@value</td>
+                        }
+                    }
+                </tr> 
+            
+            }
+        }
+    </tbody>
+
+</table>
+
+@code {
+
+    [Parameter]
+    public ICollection<TItem> DataItems { get; set; }
+
+    [Parameter]
+    public List<ColumnDefinition> Columns { get; set; }
+
+}

@@ -10,9 +10,10 @@ namespace AccountStorage.Service.Services
         #region initialize dbcontext
         private readonly AccountDbContext _dbContext;
 
-        public AccountService()
+        public AccountService(AccountDbContext dbContext)
         {
-            _dbContext = new AccountDbContext();
+            //_dbContext = new AccountDbContext();
+            _dbContext = dbContext;
         }
         #endregion
 
@@ -104,6 +105,8 @@ namespace AccountStorage.Service.Services
             .FirstAsync();
 
         public async Task<ICollection<Account>> GetAccountsAsync() => await _dbContext.Accounts
+            .Include(a => a.Platform)
+            .Include(a => a.Category)
             .AsNoTracking()
             .ToListAsync();
 

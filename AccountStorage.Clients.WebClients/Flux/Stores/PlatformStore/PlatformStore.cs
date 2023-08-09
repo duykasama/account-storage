@@ -14,12 +14,13 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.PlatformStore
         private State<ICollection<Platform>> _state;
         private IPlatformService _platformService;
 
-        public PlatformStore(IActionDispatcher<IAction> actionDispatcher)
+        public PlatformStore(IActionDispatcher<IAction> actionDispatcher, IPlatformService platformService)
         {
             _dispatcher = actionDispatcher;
             _dispatcher.Subscribe(HandleActions);
             _state = new State<ICollection<Platform>>(new List<Platform>(), Status.NONE);
-            _platformService = new PlatformService();
+            //_platformService = new PlatformService();
+            _platformService = platformService;
         }
 
 
@@ -39,7 +40,7 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.PlatformStore
                     await LoadPlatforms();
                     break;
                 case LoadPlatformByIdAction:
-                    await LoadPlatformById(action.Target as string);
+                    LoadPlatformById(action.Target as string);
                     break;
                 default:
                     return;
@@ -59,11 +60,11 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.PlatformStore
             }
         }
 
-        private async Task LoadPlatformById(string id)
+        private void LoadPlatformById(string id)
         {
             try
             {
-                var platforms = new List<Platform>() { await _platformService.GetPlatformByIdAsync(id) };
+                var platforms = new List<Platform>() { _state.Value.First(p => p.Id == id) };
                 _state = new State<ICollection<Platform>>(platforms, Status.SUCCESS);
             }
             catch
