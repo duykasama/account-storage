@@ -7,6 +7,7 @@ using AccountStorage.Clients.WebClients.Flux.Stores.AccountStore.Actions;
 using AccountStorage.Clients.WebClients.Flux.Stores.CategoryStore;
 using AccountStorage.Clients.WebClients.Flux.Stores.CounterStore;
 using AccountStorage.Clients.WebClients.Flux.Stores.PlatformStore;
+using AccountStorage.Clients.WebClients.Flux.Stores.SystemUserStore;
 using AccountStorage.Service.Entities;
 using AccountStorage.Service.Services;
 using AccountStorage.Service.Services.Interfaces;
@@ -38,6 +39,7 @@ builder.Services.AddScoped<IActionDispatcher<IAction>, ActionDispatcher>();
 builder.Services.AddScoped<AccountStore>();
 builder.Services.AddScoped<PlatformStore>();
 builder.Services.AddScoped<CategoryStore>();
+builder.Services.AddScoped<SystemUserStore>();
 builder.Services.AddScoped<CounterStore>();
 
 var app = builder.Build();

@@ -29,28 +29,45 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.CategoryStore
 
         public override void RemoveStateChangeListener(Action listener) => _stateChangeListeners -= listener;
 
-        protected override void HandleActions(IAction action)
+        protected override async void HandleActions(IAction action)
         {
             switch (action)
             {
                 case LoadCategoriesAction:
-                    LoadCategories();
+                    await LoadCategories();
+                    break;
+                case LoadCategoryByIdAction:
+                    await LoadCategoryById(action.Target as string);
                     break;
                 default:
-                    break;
+                    return;
             }  
             BroadcastStateChange();
         }
 
-        private void LoadCategories() 
+        private async Task LoadCategories() 
         {
             try
             {
-                _state = new State<ICollection<Category>>(_categoryService.GetCategories(), Status.SUCCESS);
+                _state = new State<ICollection<Category>>(await _categoryService.GetCategoriesAsync(), Status.SUCCESS);
             }
             catch 
             {
                 _state = new State<ICollection<Category>>(_state.Value, Status.FAILURE);
+            }
+        }
+
+        private async Task LoadCategoryById(string id)
+        {
+            try
+            {
+                var categories = new List<Category>() { await _categoryService.GetCategoryByIdAsync(id) };
+                _state = new State<ICollection<Category>>(categories, Status.SUCCESS);
+            }
+            catch
+            {
+                _state = new State<ICollection<Category>>(_state.Value, Status.FAILURE);
+
             }
         }
     }

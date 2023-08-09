@@ -67,5 +67,9 @@ namespace AccountStorage.Service.Services
             .AsNoTracking()
             .Where(p => p.IsVerified)
             .ToList();
+
+        public async Task<ICollection<Platform>> GetPlatformsAsync() => await _dbContext.Platforms
+            .AsNoTracking()
+            .ToListAsync();
     }
 }

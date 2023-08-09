@@ -59,5 +59,9 @@ namespace AccountStorage.Service.Services
                 return false;
             }
         }
+
+        public async Task<ICollection<Category>> GetCategoriesAsync() => await _dbContext.Categories
+            .AsNoTracking()
+            .ToListAsync();
     }
 }

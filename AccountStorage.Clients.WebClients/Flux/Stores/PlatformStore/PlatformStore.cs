@@ -31,12 +31,15 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.PlatformStore
 
         public override void RemoveStateChangeListener(Action listener) => _registeredListeners -= listener;
 
-        protected override void HandleActions(IAction action)
+        protected override async void HandleActions(IAction action)
         {
             switch (action)
             {
                 case LoadPlatformsAction:
-                    LoadPlatforms();
+                    await LoadPlatforms();
+                    break;
+                case LoadPlatformByIdAction:
+                    await LoadPlatformById(action.Target as string);
                     break;
                 default:
                     return;
@@ -44,11 +47,24 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.PlatformStore
             BroadcastStateChange();
         }
 
-        private void LoadPlatforms()
+        private async Task LoadPlatforms()
         {
             try
             {
-                _state = new State<ICollection<Platform>>(_platformService.GetPlatforms(), Status.SUCCESS);
+                _state = new State<ICollection<Platform>>(await _platformService.GetPlatformsAsync(), Status.SUCCESS);
+            }
+            catch
+            {
+                _state = new State<ICollection<Platform>>(_state.Value, Status.FAILURE);
+            }
+        }
+
+        private async Task LoadPlatformById(string id)
+        {
+            try
+            {
+                var platforms = new List<Platform>() { await _platformService.GetPlatformByIdAsync(id) };
+                _state = new State<ICollection<Platform>>(platforms, Status.SUCCESS);
             }
             catch
             {

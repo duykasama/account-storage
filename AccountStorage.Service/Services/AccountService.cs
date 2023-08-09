@@ -31,7 +31,7 @@ namespace AccountStorage.Service.Services
                 _dbContext.SaveChanges();
                 return true;
             }
-            catch
+            catch (Exception e)
             {
                 return false;
             }

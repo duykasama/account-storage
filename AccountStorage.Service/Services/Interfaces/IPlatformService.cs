@@ -5,6 +5,7 @@ namespace AccountStorage.Service.Services.Interfaces
     public interface IPlatformService
     {
         ICollection<Platform> GetPlatforms();
+        Task<ICollection<Platform>> GetPlatformsAsync();
         Task<Platform?> GetPlatformByIdAsync(string id);
         Platform? GetPlatformByName(string name);
         Task<bool> CreatePlatformAsync(Platform platform);
