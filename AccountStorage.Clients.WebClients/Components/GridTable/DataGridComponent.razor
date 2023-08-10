@@ -1,6 +1,6 @@
 ﻿@typeparam TItem
 
-<table class="table table-hover">
+<table class="table">
     <thead>
         <tr>
             @if (Columns is null || Columns.Count <= 0)
@@ -11,21 +11,14 @@
             {
                 foreach (var column in Columns)
                 {
-                    var cssClass = "table-dark";
-
-                    cssClass += (column.Alignment != Alignment.NotSet) ? " align-" + column.Alignment.ToString().ToLower() : "";
-
-                    <th scope="row" class="@cssClass">@column.Caption</th>
-
-
-                @*    if (column.Alignment != Alignment.NotSet)
+                    if (column.Alignment != Alignment.NotSet)
                     {
-                        <th class="align-@column.Alignment.ToString().ToLower() table-info">@column.Caption</th>
+                        <th class="align-@column.Alignment.ToString().ToLower()">@column.Caption</th>
                     }
                     else
                     {
-                        <th scope="row" class="tabel-info">@column.Caption</th>
-                    }*@
+                        <th>@column.Caption</th>
+                    }
                 }
             }
         </tr>
@@ -39,7 +32,6 @@
                     @foreach (var column in Columns)
                     {
                         string value = typeof(TItem).GetProperty(column.DataField).GetValue(item).ToString();
-                        var cssClass = "table-info";
 
                         if (!string.IsNullOrEmpty(column.Format) || column.DataType != DataType.NotSet)
                         {
@@ -60,11 +52,11 @@
 
                         if (column.Alignment != Alignment.NotSet)
                         {
-                            <td class="@cssClass" align="@column.Alignment.ToString().ToLower()">@value</td>
+                            <td align="@column.Alignment.ToString().ToLower()">@value</td>
                         }
                         else
                         {
-                            <td class="@cssClass">@value</td>
+                            <td>@value</td>
                         }
                     }
                 </tr> 
