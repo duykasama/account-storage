@@ -17,9 +17,10 @@ namespace AccountStorage.Test.ServiceTests
 
         public PlatformServiceTests()
         {
-            _accountService = new AccountService();
-            _platformService = new PlatformService();
-            _categorySevice = new CategoryService();
+            var dbContext = new AccountDbContext();
+            _accountService = new AccountService(dbContext);
+            _platformService = new PlatformService(dbContext);
+            _categorySevice = new CategoryService(dbContext);
         }
 
         [Fact]
