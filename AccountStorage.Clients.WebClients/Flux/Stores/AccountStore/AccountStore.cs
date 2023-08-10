@@ -20,7 +20,6 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
             _dispatcher = actionDispatcher;
             _dispatcher.Subscribe(HandleActions);
             _state = new State<ICollection<Account>>(new List<Account>(), Status.NONE);
-            //_accountService = new AccountService();
             _accountService = accountService;
         }
 
@@ -42,6 +41,9 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
                 case AddAccountAction:
                     AddAccount(action.Target as Account);
                     break;
+                case LoadAccountsByUserIdAction:
+                    await LoadAccountsByUserId(action.Target as string);
+                    break;
                 case DeleteAccountAction:
                     break;
                 case UpdateAccountAction:
@@ -55,7 +57,6 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
         private async Task LoadAccounts()
         {
             var accounts = await _accountService.GetAccountsAsync();
-            //accounts = _accountService.GetAccounts();
             _state = new State<ICollection<Account>>(accounts, Status.NONE);
         }
 
@@ -75,6 +76,12 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
             {
                 _state = new State<ICollection<Account>>(_state.Value, Status.FAILURE);
             }
+        }
+
+        private async Task LoadAccountsByUserId(string userId)
+        {
+            var accounts = await _accountService.GetAccountsByUserIdAsync(userId);
+            _state = new State<ICollection<Account>>(accounts, Status.SUCCESS);
         }
     }
 }

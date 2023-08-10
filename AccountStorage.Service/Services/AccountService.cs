@@ -2,6 +2,9 @@
 using AccountStorage.Service.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Xunit;
+
+[assembly: TestFramework("AccountStorage.Clients.WebClients", "")]
 
 namespace AccountStorage.Service.Services
 {
@@ -114,5 +117,19 @@ namespace AccountStorage.Service.Services
         {
             throw new NotImplementedException();
         }
+
+        public ICollection<Account> GetAccountsByUserId(string id) => _dbContext.Accounts
+            .AsNoTracking()
+            .Include(a => a.Platform)
+            .Include(a => a.Category)
+            .Where(a => a.UserId == id)
+            .ToList();
+
+        public async Task<ICollection<Account>> GetAccountsByUserIdAsync(string id) => await _dbContext.Accounts
+            .AsNoTracking()
+            .Include(a => a.Platform)
+            .Include(a => a.Category)
+            .Where(a => a.UserId == id)
+            .ToListAsync();
     }
 }

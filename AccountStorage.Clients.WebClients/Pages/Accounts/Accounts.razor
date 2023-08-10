@@ -1,7 +1,9 @@
 ﻿@page "/accounts"
+@using Microsoft.AspNetCore.Identity;
 @implements IDisposable
 @inject IActionDispatcher<IAction> Dispatcher
 @inject AccountStore AccountStore
+@inject UserManager<SystemUser> UserManager
 
 <h3>Accounts</h3>
 
@@ -10,18 +12,25 @@
 @code {
     ICollection<Account> accounts;
     private List<ColumnDefinition> columnsDefinition;
+    [CascadingParameter]
+    private Task<AuthenticationState> authState { get; set; }
+    private AuthenticationState _authState;
+    private SystemUser currentUser;
 
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        return Task.Run(() =>
+        await Task.Run(() =>
         {
             AccountStore.AddStateChangeListener(UpdateView);
-        });
+        }); 
     }
+
 
     protected override async Task OnParametersSetAsync()
     {
-        Dispatcher.Dispatch(new LoadAccountsAction(null));
+        _authState = await authState;
+        currentUser = await UserManager.GetUserAsync(_authState.User);
+        Dispatcher.Dispatch(new LoadAccountsByUserIdAction(currentUser.Id));
         InitializeColumnDefinition();
 
     }
