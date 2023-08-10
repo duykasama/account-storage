@@ -9,13 +9,11 @@
                 </button>
             </div>
             <div class="modal-body">
-                @BodyFragment
+                <p>@Message</p>
             </div>
             <div class="modal-footer">
-                @foreach (var button in Buttons)
-                {
-                    <button type="button" class="@button.CssClass" @onclick="() => { button.HandleOnclick.Invoke(); }">@button.Name</button>
-                }
+                <button type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @onclick="Hide">Close</button>
             </div>
         </div>
     </div>
@@ -30,10 +28,7 @@
     public string Title { get; set; }
 
     [Parameter]
-    public RenderFragment BodyFragment { get; set; }
-
-    [Parameter]
-    public ICollection<ButtonDefinition> Buttons { get; set; }
+    public string Message { get; set; }
 
     private void Hide()
     {
