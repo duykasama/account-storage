@@ -5,7 +5,7 @@
         <tr>
             @if (Columns is null || Columns.Count <= 0)
             {
-                
+                // use data reflection
             }
             else
             {
@@ -13,33 +13,25 @@
                 {
                     var cssClass = "table-dark";
 
-                    cssClass += (column.Alignment != Alignment.NotSet) ? " align-" + column.Alignment.ToString().ToLower() : "";
+                    cssClass += (column.Alignment is not Alignment.NotSet) ? " align-" + column.Alignment.ToString().ToLower() : "";
 
-                    <th scope="row" class="@cssClass">@column.Caption</th>
-
-
-                @*    if (column.Alignment != Alignment.NotSet)
-                    {
-                        <th class="align-@column.Alignment.ToString().ToLower() table-info">@column.Caption</th>
-                    }
-                    else
-                    {
-                        <th scope="row" class="tabel-info">@column.Caption</th>
-                    }*@
+                    <th scope="col" class="@cssClass">@column.Caption</th>
                 }
+                <th colspan="2" class="table-dark text-center" >Actions</th>
             }
         </tr>
     </thead>
     <tbody>
         @if (DataItems is not null)
         {
-            @foreach (var item in DataItems)
+            @foreach (var item in DataItems.Skip(Paging.NumberOfItemsToSkip(CurrentPageNumber))
+                .Take(Paging.NumberOfItemsToTake(DataItems.Count)))
             {
                 <tr>
                     @foreach (var column in Columns)
                     {
-                        string value = typeof(TItem).GetProperty(column.DataField).GetValue(item).ToString();
                         var cssClass = "table-info";
+                        string value = typeof(TItem).GetProperty(column.DataField).GetValue(item).ToString();
 
                         if (!string.IsNullOrEmpty(column.Format) || column.DataType != DataType.NotSet)
                         {
@@ -67,6 +59,16 @@
                             <td class="@cssClass">@value</td>
                         }
                     }
+                    <td class="table-info">
+                        <button class="btn btn-outline-secondary" @onclick='() => { Edit.InvokeAsync(typeof(TItem).GetProperty("Id").GetValue(item).ToString()); }'>
+                            <span class="oi oi-pencil"></span>
+                        </button>
+                    </td>
+                    <td class="table-info">
+                        <button class="btn btn-outline-danger" @onclick='() => { Delete.InvokeAsync((typeof(TItem).GetProperty("Id").GetValue(item).ToString())); }'>
+                            <span class="oi oi-trash"></span>
+                        </button>
+                    </td>
                 </tr> 
             
             }
@@ -75,7 +77,34 @@
 
 </table>
 
+@if (Paging is not null && Paging.Enabled && DataItems is not null)
+{
+    @if (Paging.UseCustomPager)
+    {
+        @CustomPager
+    }
+    else
+    {
+        <div class="d-flex justify-content-end align-items-center">
+            <ul class="pagination">
+                <li class="page-item">
+                    <button class="page-link" @onclick="GoToPrevPage">&laquo;</button>
+                </li>
+                <li class="page-item text-danger">
+                    <span class="page-link" href="#">Page @CurrentPageNumber of @Paging.LastPage(DataItems.Count)</span>
+                </li>
+                <li class="page-item">
+                    <button class="page-link" @onclick="GoToNextPage">&raquo;</button>
+                </li>
+            </ul>
+        </div>
+    }
+}
+
+
 @code {
+    [Parameter]
+    public int CurrentPageNumber { get; set; } = 1;
 
     [Parameter]
     public ICollection<TItem> DataItems { get; set; }
@@ -83,4 +112,28 @@
     [Parameter]
     public List<ColumnDefinition> Columns { get; set; }
 
+    [Parameter]
+    public PagingConfig Paging { get; set; }
+
+    [Parameter]
+    public RenderFragment CustomPager { get; set; }
+
+    [Parameter]
+    public EventCallback<string> Edit { get; set; }
+
+    [Parameter]
+    public EventCallback<string> Delete { get; set; }
+    
+
+    private string id = string.Empty;
+
+    public void GoToPrevPage()
+    {
+        CurrentPageNumber = Paging.PreviousPageNumber(CurrentPageNumber);
+    }
+
+    public void GoToNextPage()
+    {
+        CurrentPageNumber = Paging.NextPageNumber(CurrentPageNumber, DataItems.Count);
+    }
 }

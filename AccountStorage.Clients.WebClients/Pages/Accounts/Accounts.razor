@@ -5,34 +5,84 @@
 @inject AccountStore AccountStore
 @inject UserManager<SystemUser> UserManager
 
-<h3>Accounts</h3>
+<h3 class="text-center">Accounts</h3>
 
-<DataGridComponent TItem="Account" DataItems="@accounts" Columns="columnsDefinition" /> 
+<DataGridComponent 
+    TItem="Account" 
+    DataItems="@accounts" 
+    Columns="@columnsDefinition" 
+    Paging="@paging"
+    Edit="EditAccount"
+    Delete="DeleteAccount"/>
+
+@if (displayModalBox)
+{
+    <ModalBoxComponent 
+        HideModalBox="HideModalBox" 
+        Title="@modalBoxTitle"
+        Buttons="buttonsDefinition"
+        BodyFragment="modalBoxBody" />
+}
 
 @code {
-    ICollection<Account> accounts;
-    private List<ColumnDefinition> columnsDefinition;
     [CascadingParameter]
     private Task<AuthenticationState> authState { get; set; }
     private AuthenticationState _authState;
+    private List<ColumnDefinition> columnsDefinition;
+    private List<ButtonDefinition> buttonsDefinition;
+    private PagingConfig paging;
     private SystemUser currentUser;
+    private ICollection<Account> accounts;
+    private string modalBoxTitle = string.Empty;
+    private bool displayModalBox = false;
+    private string accountId = string.Empty;
+    private RenderFragment modalBoxBody;
 
-    protected override async Task OnInitializedAsync()
+    private void EditAccount(string id)
     {
-        await Task.Run(() =>
-        {
-            AccountStore.AddStateChangeListener(UpdateView);
-        }); 
+        //display = true;
     }
 
-
-    protected override async Task OnParametersSetAsync()
+    private void DeleteAccount(string id)
     {
-        _authState = await authState;
-        currentUser = await UserManager.GetUserAsync(_authState.User);
-        Dispatcher.Dispatch(new LoadAccountsByUserIdAction(currentUser.Id));
-        InitializeColumnDefinition();
+        accountId = id;
+        modalBoxTitle = "Warning";
+        InitializeButtonsDefinition(new ButtonDefinition[]
+        {
+            new ButtonDefinition(){ Name = "Yes", HandleOnclick = HandleWarningYes, CssClass = "btn btn-outline-danger" },
+            new ButtonDefinition(){ Name = "No", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary" },
+        });
+        modalBoxBody = @<span>Are you sure to delete this account?</span>;
+        displayModalBox = true;
+    }
 
+    private void HandleWarningYes()
+    {
+        modalBoxTitle = "Notification";
+        InitializeButtonsDefinition(new ButtonDefinition[]
+        {
+            new ButtonDefinition(){ Name = "Delete", HandleOnclick = DeleteAccountConfirm, CssClass = "btn btn-outline-danger" },
+            new ButtonDefinition(){ Name = "Cancel", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary"},
+        });
+        modalBoxBody = @<div>Enter your password to confirm:</div>;
+        modalBoxBody += @<input class="w-50" type="password" placeholder="Enter your password" />;
+        UpdateView();
+    }
+
+    private void HandleWarningNo()
+    {
+        HideModalBox();
+        UpdateView();
+    }
+
+    private void DeleteAccountConfirm()
+    {
+
+    }
+
+    private void HideModalBox()
+    {
+        displayModalBox = false;
     }
 
     private void InitializeColumnDefinition()
@@ -46,11 +96,36 @@
                 new ColumnDefinition(){ DataField = nameof(Account.Email), Caption = "Email"},
                 new ColumnDefinition(){ DataField = nameof(Account.Platform), Caption = "Platform"},
                 new ColumnDefinition(){ DataField = nameof(Account.Category), Caption = "Category"},
-                new ColumnDefinition(){ DataField = nameof(Account.LastModification), Caption = "Last modification", Alignment = Alignment.Right, DataType = DataType.DateTime, Format = "dd/MMM/yyyy"},
+                new ColumnDefinition(){ DataField = nameof(Account.LastModification), Caption = "Last modification", DataType = DataType.DateTime, Format = "dd/MMM/yyyy"},
             });
-
         }
-        
+        paging = new PagingConfig()
+        {
+            Enabled = true,
+            PageSize = 10,
+        };     
+    }
+
+    private void InitializeButtonsDefinition(params ButtonDefinition[] buttons)
+    {
+        buttonsDefinition = new List<ButtonDefinition>();
+        buttonsDefinition.AddRange(buttons);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Run(() =>
+        {
+            AccountStore.AddStateChangeListener(UpdateView);
+            InitializeColumnDefinition();
+        }); 
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _authState = await authState;
+        currentUser = await UserManager.GetUserAsync(_authState.User);
+        Dispatcher.Dispatch(new LoadAccountsByUserIdAction(currentUser.Id));
     }
 
     private void UpdateView()
