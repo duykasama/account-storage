@@ -92,9 +92,25 @@ namespace AccountStorage.Service.Services
             .AsNoTracking()
             .FirstOrDefault(a => a.Id == id);
 
-        public Task<bool> CreateAccountAsync(Account account)
+        public async Task<bool> CreateAccountAsync(Account account)
         {
-            throw new NotImplementedException();
+            var a = await GetAccountByIdAsync(account.Id);
+            if (a is not null)
+            {
+                return false;
+            }
+
+            try
+            {
+                _dbContext.Entry(account).State = EntityState.Modified;
+                await _dbContext.Accounts.AddAsync(account);
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public Task<bool> DeleteAccountByIdAsync(string id)
@@ -122,6 +138,7 @@ namespace AccountStorage.Service.Services
             .Include(a => a.Platform)
             .Include(a => a.Category)
             .Where(a => a.UserId == id)
+            .OrderBy(a => a.CreationDate)
             .ToList();
 
         public async Task<ICollection<Account>> GetAccountsByUserIdAsync(string id) => await _dbContext.Accounts
@@ -129,6 +146,7 @@ namespace AccountStorage.Service.Services
             .Include(a => a.Platform)
             .Include(a => a.Category)
             .Where(a => a.UserId == id)
+            .OrderByDescending(a => a.CreationDate)
             .ToListAsync();
     }
 }

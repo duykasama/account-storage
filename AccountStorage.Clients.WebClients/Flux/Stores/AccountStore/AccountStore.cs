@@ -39,7 +39,7 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
                     await LoadAccounts();
                     break;
                 case AddAccountAction:
-                    AddAccount(action.Target as Account);
+                    await AddAccount(action.Target as Account);
                     break;
                 case LoadAccountsByUserIdAction:
                     await LoadAccountsByUserId(action.Target as string);
@@ -64,7 +64,7 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
             _state = new State<ICollection<Account>>(accounts, Status.NONE);
         }
 
-        private void AddAccount(Account? target)
+        private async Task AddAccount(Account? target)
         {
             if (target is null)
             {
@@ -72,9 +72,9 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
                 return;
             }
 
-            if (_accountService.CreateAccount(target))
+            if (await _accountService.CreateAccountAsync(target))
             {
-                _state = new State<ICollection<Account>>(_accountService.GetAccounts(), Status.SUCCESS);
+                _state = new State<ICollection<Account>>(await _accountService.GetAccountsByUserIdAsync(target.UserId), Status.SUCCESS);
             }
             else
             {

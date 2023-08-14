@@ -1,8 +1,4 @@
 ﻿@page "/add-account"
-@using AccountStorage.Clients.WebClients.Flux.Stores.CategoryStore.Actions;
-@using AccountStorage.Clients.WebClients.Flux.Stores.SystemUserStore;
-@using AccountStorage.Clients.WebClients.Flux.Stores.SystemUserStore.Actions;
-@using Microsoft.AspNetCore.Identity;
 @implements IDisposable
 @inject IActionDispatcher<IAction> Dispatcher
 @inject AccountStore AccountStore
@@ -12,7 +8,6 @@
 @inject UserManager<SystemUser> UserManager
 
 <h1 class="text-center">Add New Account</h1>
-<h1 class="text-center">@_authState.User.Identity.Name</h1>
 
 <div class="d-flex justify-content-center align-items-center">
     <EditForm Model="@account" OnSubmit="HandleFormSubmission" class="form-control w-50 p-5">
@@ -70,7 +65,11 @@
 
 @if (DisplayModalBox)
 {
-    <ModalBoxComponent HideModalBox="HideModalBox" Title="@modalBoxTitle" Message="@modalBoxMessage" />
+    <ModalBoxComponent 
+        HideModalBox="HideModalBox" 
+        Title="@modalBoxTitle"
+        BodyFragment="@modalBoxBody"
+        Buttons="@buttonsDefinition"/>
 }
 
 @code {
@@ -85,7 +84,15 @@
     private ICollection<Category> categories = new List<Category>();
     private string modalBoxTitle = string.Empty;
     private string modalBoxMessage = string.Empty;
+    private RenderFragment modalBoxBody;
+    private List<ButtonDefinition> buttonsDefinition;
     private bool DisplayModalBox { get; set; } = false;
+
+    private void InitButtonsDefinition(params ButtonDefinition[] buttons)
+    {
+        buttonsDefinition = new List<ButtonDefinition>();
+        buttonsDefinition.AddRange(buttons);
+    }
 
     protected override Task OnParametersSetAsync()
     {
@@ -108,21 +115,23 @@
         {
             // display success message
             modalBoxTitle = "Notification";
-            modalBoxMessage = "Account created successfully";
+            modalBoxBody = @<div>Account created successfully</div>;
+            InitButtonsDefinition(
+                new ButtonDefinition() { Name = "OK", CssClass = "btn btn-outline-primary", HandleOnclick = HideModalBox }
+            );
             account = new Account();
-
         }
         else if (AccountStore.GetState().Status == Status.FAILURE)
         {
             // display failure message
             modalBoxTitle = "Error";
-            modalBoxMessage = "Could not add your account";
+            modalBoxBody = @<div>Could not add your account</div>;
         }
         else
         {
             // unknown
             modalBoxTitle = "?????";
-            modalBoxMessage = "Something went wrong";
+            modalBoxBody = @<div>Something went wrong</div>;
         }
         Dispatcher.Dispatch(new LoadPlatformsAction(new Platform()));
         Dispatcher.Dispatch(new LoadCategoriesAction(new Category()));
@@ -140,6 +149,7 @@
     private void HideModalBox()
     {
         DisplayModalBox = false;
+        UpdateView();
     }
 
     #region update store status
