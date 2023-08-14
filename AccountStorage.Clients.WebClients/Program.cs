@@ -40,6 +40,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<SystemUser>>();
 builder.Services.AddScoped<IActionDispatcher<IAction>, ActionDispatcher>();
 builder.Services.AddTransient<AccountDbContext>();
+builder.Services.AddTransient<AccountDbContextFactory>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IPlatformService, PlatformService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();

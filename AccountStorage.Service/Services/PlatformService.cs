@@ -9,10 +9,10 @@ namespace AccountStorage.Service.Services
         #region initialize dbcontext
         private readonly AccountDbContext _dbContext;
         
-        public PlatformService(AccountDbContext dbContext)
+        public PlatformService(AccountDbContextFactory dbContextFactory)
         {
             //_dbContext = new AccountDbContext();
-            _dbContext = dbContext;
+            _dbContext = dbContextFactory.CreateDbContext(new string[] { });
         }
         #endregion
 

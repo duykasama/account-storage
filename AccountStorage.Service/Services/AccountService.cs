@@ -13,10 +13,9 @@ namespace AccountStorage.Service.Services
         #region initialize dbcontext
         private readonly AccountDbContext _dbContext;
 
-        public AccountService(AccountDbContext dbContext)
+        public AccountService(AccountDbContextFactory dbContext)
         {
-            //_dbContext = new AccountDbContext();
-            _dbContext = dbContext;
+            _dbContext = dbContext.CreateDbContext(new string[] {});
         }
         #endregion
 
@@ -43,7 +42,7 @@ namespace AccountStorage.Service.Services
 
         public async Task<bool> DeleteAccountById(string id)
         {
-            var a = GetAccountById(id);
+            var a = await GetAccountByIdAsync(id);
             if (a is null)
             {
                 return false;
@@ -105,7 +104,7 @@ namespace AccountStorage.Service.Services
 
         public async Task<Account?> GetAccountByIdAsync(string id) => await _dbContext.Accounts
             .AsNoTracking()
-            .FirstAsync();
+            .FirstOrDefaultAsync(a => a.Id == id);
 
         public async Task<ICollection<Account>> GetAccountsAsync() => await _dbContext.Accounts
             .Include(a => a.Platform)

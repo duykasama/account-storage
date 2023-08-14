@@ -45,8 +45,12 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
                     await LoadAccountsByUserId(action.Target as string);
                     break;
                 case DeleteAccountAction:
+                    await DeleteAccount(action.Target as Account);
                     break;
                 case UpdateAccountAction:
+                    break;
+                case LoadAccountByIdAction:
+                    LoadAccountById(action.Target as string);
                     break;
                 default:
                     return;
@@ -82,6 +86,32 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
         {
             var accounts = await _accountService.GetAccountsByUserIdAsync(userId);
             _state = new State<ICollection<Account>>(accounts, Status.SUCCESS);
+        }
+
+        private async Task DeleteAccount(Account account)
+        {
+            try
+            {
+                var isDeleted = await _accountService.DeleteAccountById(account.Id);
+                if (isDeleted)
+                {
+                    _state = new State<ICollection<Account>>(await _accountService.GetAccountsAsync(), Status.SUCCESS);
+                }
+                else
+                {
+                    throw new Exception();
+                }
+            }
+            catch
+            {
+                _state = new State<ICollection<Account>>(_state.Value, Status.FAILURE);    
+            }
+        }
+
+        private void LoadAccountById(string id)
+        {
+            var account = _state.Value.Where(a => a.Id == id).ToList();
+            _state = new State<ICollection<Account>>(account, Status.SUCCESS);
         }
     }
 }

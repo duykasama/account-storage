@@ -10,10 +10,10 @@ namespace AccountStorage.Service.Services
         #region initialize dbcontext
         private readonly AccountDbContext _dbContext;
 
-        public SystemUserService(AccountDbContext dbContext)
+        public SystemUserService(AccountDbContextFactory dbContextFactory)
         {
             //_dbContext = new AccountDbContext();
-            _dbContext = dbContext;
+            _dbContext = dbContextFactory.CreateDbContext(new string[] { });
         }
         #endregion
         public SystemUser? GetSystemUserById(string id) => _dbContext.SystemUsers

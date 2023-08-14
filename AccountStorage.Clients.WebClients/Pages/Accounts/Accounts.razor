@@ -1,5 +1,7 @@
 ﻿@page "/accounts"
 @using Microsoft.AspNetCore.Identity;
+@using System.Text;
+@using System.Security.Cryptography;
 @implements IDisposable
 @inject IActionDispatcher<IAction> Dispatcher
 @inject AccountStore AccountStore
@@ -37,6 +39,8 @@
     private bool displayModalBox = false;
     private string accountId = string.Empty;
     private RenderFragment modalBoxBody;
+    private string confirmationPassword;
+    private bool isCorrectPassword;
 
     private void EditAccount(string id)
     {
@@ -61,11 +65,11 @@
         modalBoxTitle = "Notification";
         InitializeButtonsDefinition(new ButtonDefinition[]
         {
-            new ButtonDefinition(){ Name = "Delete", HandleOnclick = DeleteAccountConfirm, CssClass = "btn btn-outline-danger" },
+            new ButtonDefinition(){ Name = "Delete", HandleOnclick = DeleteAccountConfirmation, CssClass = "btn btn-outline-danger" },
             new ButtonDefinition(){ Name = "Cancel", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary"},
         });
         modalBoxBody = @<div>Enter your password to confirm:</div>;
-        modalBoxBody += @<input class="w-50" type="password" placeholder="Enter your password" />;
+        modalBoxBody += @<input class="w-50" type="password" placeholder="Enter your password" @bind="@confirmationPassword"/>;
         UpdateView();
     }
 
@@ -75,9 +79,43 @@
         UpdateView();
     }
 
-    private void DeleteAccountConfirm()
+    private async void DeleteAccountConfirmation()
     {
-
+        isCorrectPassword = await UserManager.CheckPasswordAsync(currentUser, confirmationPassword);
+        if (isCorrectPassword)
+        {
+            //Dispatcher.Dispatch(new LoadAccountsByUserIdAction(currentUser.Id));
+            Dispatcher.Dispatch(new LoadAccountByIdAction(accountId));
+            var account = AccountStore.GetState().Value.First();
+            Dispatcher.Dispatch(new DeleteAccountAction(account));
+            if (AccountStore.GetState().Status == Status.SUCCESS)
+            {
+                InitializeButtonsDefinition(new ButtonDefinition[]
+                {
+                    new ButtonDefinition(){ Name = "OK", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary"},
+                });
+                modalBoxBody = @<div>Account has been deleted</div>;
+                UpdateView();
+            }
+            else
+            {
+                InitializeButtonsDefinition(new ButtonDefinition[]
+                {
+                     new ButtonDefinition(){ Name = "OK", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary"},
+                });
+                modalBoxBody = @<div>An error occurred! Couldn't delete your account</div>;
+                UpdateView();
+            }
+        }
+        else
+        {
+            InitializeButtonsDefinition(new ButtonDefinition[]
+            {
+                 new ButtonDefinition(){ Name = "OK", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary"},
+            });
+            modalBoxBody = @<div>Incorrect password</div>;
+            UpdateView();
+        }
     }
 
     private void HideModalBox()
