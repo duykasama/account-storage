@@ -28,7 +28,6 @@ builder.Services.AddDbContext<AccountDbContext>(options =>
     options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
-//builder.Services.AddDbContextFactory<AccountDbContext>();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddIdentity<SystemUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
@@ -41,10 +40,10 @@ builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuth
 builder.Services.AddScoped<IActionDispatcher<IAction>, ActionDispatcher>();
 builder.Services.AddTransient<AccountDbContext>();
 builder.Services.AddTransient<AccountDbContextFactory>();
-builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<IPlatformService, PlatformService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<ISystemUserService, SystemUserService>();
+builder.Services.AddTransient<IAccountService, AccountService>();
+builder.Services.AddTransient<IPlatformService, PlatformService>();
+builder.Services.AddTransient<ICategoryService, CategoryService>();
+builder.Services.AddTransient<ISystemUserService, SystemUserService>();
 builder.Services.AddScoped<AccountStore>();
 builder.Services.AddScoped<PlatformStore>();
 builder.Services.AddScoped<CategoryStore>();

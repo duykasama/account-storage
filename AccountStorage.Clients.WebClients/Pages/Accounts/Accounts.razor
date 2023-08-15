@@ -66,7 +66,7 @@
             new ButtonDefinition(){ Name = "Cancel", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary"},
         });
         modalBoxBody = @<div>Enter your password to confirm:</div>;
-        modalBoxBody += @<input class="w-50" type="password" placeholder="Enter your password" @bind="@confirmationPassword"/>;
+        modalBoxBody += @<input class="w-50" type="password" placeholder="Enter your password" @bind="@confirmationPassword" required/>;
         UpdateView();
     }
 
@@ -78,6 +78,10 @@
 
     private async void DeleteAccountConfirmation()
     {
+        if (string.IsNullOrEmpty(confirmationPassword))
+        {
+            return;
+        }
         isCorrectPassword = await UserManager.CheckPasswordAsync(currentUser, confirmationPassword);
         if (isCorrectPassword)
         {
@@ -87,33 +91,31 @@
             Dispatcher.Dispatch(new DeleteAccountAction(account));
             if (AccountStore.GetState().Status == Status.SUCCESS)
             {
-                InitializeButtonsDefinition(new ButtonDefinition[]
-                {
-                    new ButtonDefinition(){ Name = "OK", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary"},
-                });
+                InitializeButtonsDefinition(
+                    new ButtonDefinition(){ Name = "OK", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary"}
+                );
                 modalBoxBody = @<div>Account has been deleted</div>;
                 UpdateView();
             }
             else
             {
-                InitializeButtonsDefinition(new ButtonDefinition[]
-                {
-                     new ButtonDefinition(){ Name = "OK", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary"},
-                });
+                InitializeButtonsDefinition(
+                     new ButtonDefinition(){ Name = "OK", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary"}
+                );
                 modalBoxBody = @<div>An error occurred! Couldn't delete your account</div>;
                 UpdateView();
             }
         }
         else
         {
-            InitializeButtonsDefinition(new ButtonDefinition[]
-            {
-                 new ButtonDefinition(){ Name = "OK", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary"},
-            });
+            InitializeButtonsDefinition(
+                 new ButtonDefinition(){ Name = "OK", HandleOnclick = HandleWarningNo, CssClass = "btn btn-outline-primary"}
+            );
             modalBoxBody = @<div>Incorrect password</div>;
             UpdateView();
         }
         confirmationPassword = string.Empty;
+        //Dispatcher.Dispatch(new LoadAccountsByUserIdAction(currentUser.Id));
     }
 
     private void HideModalBox()
@@ -132,7 +134,7 @@
                 new ColumnDefinition(){ DataField = nameof(Account.Email), Caption = "Email"},
                 new ColumnDefinition(){ DataField = nameof(Account.Platform), Caption = "Platform"},
                 new ColumnDefinition(){ DataField = nameof(Account.Category), Caption = "Category"},
-                new ColumnDefinition(){ DataField = nameof(Account.LastModification), Caption = "Last modification", DataType = DataType.DateTime, Format = "dd/MMM/yyyy"},
+                new ColumnDefinition(){ DataField = nameof(Account.LastModification), Caption = "Last modification", DataType = DataType.DateTime, Format = "dd/MMM/yyyy"}
             });
         }
         paging = new PagingConfig()

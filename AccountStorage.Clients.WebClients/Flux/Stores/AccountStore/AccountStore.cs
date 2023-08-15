@@ -90,22 +90,8 @@ namespace AccountStorage.Clients.WebClients.Flux.Stores.AccountStore
 
         private async Task DeleteAccount(Account account)
         {
-            try
-            {
-                var isDeleted = await _accountService.DeleteAccountById(account.Id);
-                if (isDeleted)
-                {
-                    _state = new State<ICollection<Account>>(await _accountService.GetAccountsAsync(), Status.SUCCESS);
-                }
-                else
-                {
-                    throw new Exception();
-                }
-            }
-            catch
-            {
-                _state = new State<ICollection<Account>>(_state.Value, Status.FAILURE);    
-            }
+            await _accountService.DeleteAccountById(account.Id);
+            await LoadAccountsByUserId(account.UserId);
         }
 
         private void LoadAccountById(string id)
