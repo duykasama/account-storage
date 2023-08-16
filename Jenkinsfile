@@ -5,8 +5,8 @@ pipeline {
         stage("Build"){
             steps{
                 echo "========executing A========"
-                sh 'dotnet restore'
-                sh 'dotnet build --no-restore'
+                // sh 'dotnet restore'
+                // sh 'dotnet build --no-restore'
             }
             post{
                 success{
