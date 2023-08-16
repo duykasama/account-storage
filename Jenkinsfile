@@ -21,7 +21,7 @@ pipeline {
 
         stage("Publish"){
             steps{
-                withDockerRegistry(credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/'){
+                withDockerRegistry(credentialsId: 'docker-hub', url: 'https://hub.docker.com/'){
                     sh 'docker build -t duykasama/account-storage-image:built-by-jenkins .'
                     sh 'docker push duykasama/account-storage-image:built-by-jenkins'
                 }
