@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    tools{
+        MSBuild 'my-msbuild'
+    }
+
     stages{
         stage("Build"){
             steps{
