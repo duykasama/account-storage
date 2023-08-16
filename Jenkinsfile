@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools{
-        MSBuild 'my-msbuild'
+        my-msbuild 'msbuild'
     }
 
     stages{
